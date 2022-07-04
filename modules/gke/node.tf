@@ -1,6 +1,7 @@
 /******************************************
   Create Container Cluster node pools
  *****************************************/
+
 resource "google_container_node_pool" "pools" {
   for_each = local.node_pools
   name     = each.key
@@ -86,8 +87,8 @@ resource "google_container_node_pool" "pools" {
     )
 
     local_ssd_count = lookup(each.value, "local_ssd_count", 0)
-    disk_size_gb    = lookup(each.value, "disk_size_gb", 100)
-    disk_type       = lookup(each.value, "disk_type", "pd-standard")
+    disk_size_gb    = lookup(each.value, "disk_size_gb", 50)
+    disk_type       = lookup(each.value, "disk_type", "pd-balanced")
 
 
     service_account = lookup(
@@ -101,19 +102,7 @@ resource "google_container_node_pool" "pools" {
       local.node_pools_oauth_scopes["all"],
       local.node_pools_oauth_scopes[each.value["name"]],
     )
-
-    # guest_accelerator = [
-    #   for guest_accelerator in lookup(each.value, "accelerator_count", 0) > 0 ? [{
-    #     type               = lookup(each.value, "accelerator_type", "")
-    #     count              = lookup(each.value, "accelerator_count", 0)
-    #     gpu_partition_size = lookup(each.value, "gpu_partition_size", null)
-    #     }] : [] : {
-    #     type               = guest_accelerator["type"]
-    #     count              = guest_accelerator["count"]
-    #     gpu_partition_size = guest_accelerator["gpu_partition_size"]
-    #   }
-    # ]
-
+    
     dynamic "workload_metadata_config" {
       for_each = local.cluster_node_metadata_config
 

@@ -1,18 +1,4 @@
-/**
- * Copyright 2019 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 
 variable "project_id" {
   type        = string
@@ -77,7 +63,7 @@ variable "disk_autoresize_limit" {
 
 variable "disk_size" {
   description = "The disk size for the master instance."
-  default     = 10
+  default     = 50
 }
 
 variable "disk_type" {
@@ -119,7 +105,8 @@ variable "database_flags" {
 variable "user_labels" {
   description = "The key/value labels for the master instances."
   type        = map(string)
-  default     = {}
+  default = {
+}
 }
 
 variable "backup_configuration" {
@@ -133,8 +120,6 @@ variable "backup_configuration" {
     retained_backups               = number
     retention_unit                 = string
   })
-  default = {
-  }
 }
 
 variable "insights_config" {
@@ -156,9 +141,9 @@ variable "ip_configuration" {
     require_ssl         = bool
     allocated_ip_range  = string
   })
-  default = {
-    authorized_networks = []
-  }
+  # default = {
+  #   authorized_networks = []
+  # }
 }
 
 // Read Replicas

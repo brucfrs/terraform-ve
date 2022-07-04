@@ -1,6 +1,7 @@
 /******************************************
   Get available container engine versions
  *****************************************/
+
 data "google_container_engine_versions" "region" {
   location = local.location
   project  = var.project_id
@@ -56,8 +57,6 @@ locals {
   }], var.cluster_autoscaling.gpu_resources) : []
 
 
-  # custom_kube_dns_config      = length(keys(var.stub_domains)) > 0
-  # upstream_nameservers_config = length(var.upstream_nameservers) > 0
   network_project_id = var.network_project_id != "" ? var.network_project_id : var.project_id
   zone_count         = length(var.zones)
   cluster_type       = var.regional ? "regional" : "zonal"
@@ -76,64 +75,16 @@ locals {
     provider = null
   }]
 
-  # cluster_authenticator_security_group = var.authenticator_security_group == null ? [] : [{
-  #   security_group = var.authenticator_security_group
-  # }]
 
-  # // legacy mappings https://github.com/hashicorp/terraform-provider-google/pull/10238
   old_node_metadata_config_mapping = { GKE_METADATA_SERVER = "GKE_METADATA", GCE_METADATA = "EXPOSE" }
 
   cluster_node_metadata_config = var.node_metadata == "UNSPECIFIED" ? [] : [{
     mode = lookup(local.old_node_metadata_config_mapping, var.node_metadata, var.node_metadata)
   }]
 
-  # cluster_output_name           = google_container_cluster.primary.name
-  # cluster_output_regional_zones = google_container_cluster.primary.node_locations
-  # cluster_output_zonal_zones    = local.zone_count > 1 ? slice(var.zones, 1, local.zone_count) : []
-  # cluster_output_zones          = local.cluster_output_regional_zones
-
-  # cluster_endpoint           = google_container_cluster.primary.endpoint
   cluster_endpoint_for_nodes = "${google_container_cluster.primary.endpoint}/32"
 
-  # cluster_output_master_auth                        = concat(google_container_cluster.primary.*.master_auth, [])
-  # cluster_output_master_version                     = google_container_cluster.primary.master_version
-  # cluster_output_min_master_version                 = google_container_cluster.primary.min_master_version
-  # cluster_output_logging_service                    = google_container_cluster.primary.logging_service
-  # cluster_output_monitoring_service                 = google_container_cluster.primary.monitoring_service
-  # cluster_output_network_policy_enabled             = google_container_cluster.primary.addons_config.0.network_policy_config.0.disabled
-  # cluster_output_http_load_balancing_enabled        = google_container_cluster.primary.addons_config.0.http_load_balancing.0.disabled
-  # cluster_output_horizontal_pod_autoscaling_enabled = google_container_cluster.primary.addons_config.0.horizontal_pod_autoscaling.0.disabled
-
-
-  # master_authorized_networks_config = length(var.master_authorized_networks) == 0 ? [] : [{
-  #   cidr_blocks : var.master_authorized_networks
-  # }]
-
-  # cluster_output_node_pools_names    = concat([for np in google_container_node_pool.pools : np.name], [""])
-  # cluster_output_node_pools_versions = { for np in google_container_node_pool.pools : np.name => np.version }
-
-  # cluster_master_auth_list_layer1 = local.cluster_output_master_auth
-  # cluster_master_auth_list_layer2 = local.cluster_master_auth_list_layer1[0]
-  # cluster_master_auth_map         = local.cluster_master_auth_list_layer2[0]
-
-  # cluster_location = google_container_cluster.primary.location
-  # cluster_region   = var.regional ? var.region : join("-", slice(split("-", local.cluster_location), 0, 2))
-  # cluster_zones    = sort(local.cluster_output_zones)
-
-  # // node pool ID is in the form projects/<project-id>/locations/<location>/clusters/<cluster-name>/nodePools/<nodepool-name>
-  # cluster_name_parts_from_nodepool           = split("/", element(values(google_container_node_pool.pools)[*].id, 0))
-  # cluster_name_computed                      = element(local.cluster_name_parts_from_nodepool, length(local.cluster_name_parts_from_nodepool) - 3)
   cluster_network_tag = "gke-${var.name}"
-  # cluster_ca_certificate                     = local.cluster_master_auth_map["cluster_ca_certificate"]
-  # cluster_master_version                     = local.cluster_output_master_version
-  # cluster_min_master_version                 = local.cluster_output_min_master_version
-  # cluster_logging_service                    = local.cluster_output_logging_service
-  # cluster_monitoring_service                 = local.cluster_output_monitoring_service
-  # cluster_node_pools_names                   = local.cluster_output_node_pools_names
-  # cluster_node_pools_versions                = local.cluster_output_node_pools_versions
-  # cluster_network_policy_enabled             = !local.cluster_output_network_policy_enabled
-  # cluster_http_load_balancing_enabled        = !local.cluster_output_http_load_balancing_enabled
-  # cluster_horizontal_pod_autoscaling_enabled = !local.cluster_output_horizontal_pod_autoscaling_enabled
   workload_identity_enabled = !(var.identity_namespace == null || var.identity_namespace == "null")
   cluster_workload_identity_config = !local.workload_identity_enabled ? [] : var.identity_namespace == "enabled" ? [{
     workload_pool = "${var.project_id}.svc.id.goog" }] : [{ workload_pool = var.identity_namespace

@@ -83,12 +83,6 @@ locals {
 
 data "google_client_config" "default" {}
 
-# provider "kubernetes" {
-#   host                   = "https://${module.gke.endpoint}"
-#   token                  = data.google_client_config.default.access_token
-#   cluster_ca_certificate = base64decode(module.gke.ca_certificate)
-# }
-
 data "google_compute_subnetwork" "subnetwork" {
   name    = lookup(var.subnet_name, local.env)
   project = lookup(var.project_id, local.env)
@@ -98,6 +92,7 @@ data "google_compute_subnetwork" "subnetwork" {
 module "gke" {
   source                      = "./modules/gke"
   project_id                  = lookup(var.project_id, local.env)
+  #network_project_id          = lookup(var.project_id, local.env)
   name                        = "cluster-gke-${local.env}"
   regional                    = lookup(var.gke_location, local.env)
   region                      = var.region
@@ -108,9 +103,6 @@ module "gke" {
   create_service_account      = false
   service_account             = var.compute_engine_service_account
   secundary_ip_cidr_range_k8s = lookup(var.secundary_ip_cidr_range_k8s, local.env)
-  # enable_private_endpoint   = true
-  # enable_private_nodes      = true
-  # master_ipv4_cidr_block    = "172.16.0.0/28"
   default_max_pods_per_node       = var.default_max_pods_per_node
   remove_default_node_pool        = true
   enable_vertical_pod_autoscaling = false
@@ -123,8 +115,8 @@ module "gke" {
       min_count         = 1
       max_count         = 10
       local_ssd_count   = 0
-      disk_size_gb      = 100
-      disk_type         = "pd-standard"
+      disk_size_gb      = 50
+      disk_type         = "pd-balanced"
       auto_repair       = true
       auto_upgrade      = true
       service_account   = var.compute_engine_service_account
@@ -153,12 +145,14 @@ locals {
   read_replica_ip_configuration = {
     ipv4_enabled       = true
     require_ssl        = false
-    private_network    = null
+    private_network    = lookup(var.network_name, local.env)
     allocated_ip_range = null
     authorized_networks = [
       {
-        name  = "${var.project_id}-cidr"
-        value = var.pg_ha_external_ip_range
+        # name  = "${var.project_id}-cidr"
+        # value = var.pg_ha_external_ip_range
+        name  = lookup(var.subnet_name_postgre, local.env)
+        value = lookup(var.subnet_ip_postgre, local.env)
       },
     ]
   }
@@ -216,14 +210,14 @@ module "postgresql" {
   read_replicas = [
     {
       name                  = "0"
-      zone                  = "us-central1-a"
+      zone                  = "us-east1-b"
       tier                  = "db-custom-1-3840"
       ip_configuration      = local.read_replica_ip_configuration
       database_flags        = [{ name = "autovacuum", value = "off" }]
-      disk_autoresize       = null
-      disk_autoresize_limit = null
-      disk_size             = null
-      disk_type             = "PD_HDD"
+      disk_autoresize       = var.disk_autoresize
+      disk_autoresize_limit = var.disk_autoresize_limit
+      disk_size             = var.disk_size
+      disk_type             = var.disk_type
       user_labels           = { managed = "terraform" }
       encryption_key_name   = null
     },
@@ -261,7 +255,7 @@ module "postgresql" {
 
   additional_databases = [
     {
-      name      = "${var.pg_ha_name}-additional"
+      name      = "Database additional"
       charset   = "UTF8"
       collation = "en_US.UTF8"
     },

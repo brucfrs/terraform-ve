@@ -6,24 +6,6 @@ variable "project_id" {
   description = "The ID of the project where this VPC will be created"
 }
 
-# variable "project_id" {
-#     type = object({
-#     dev  = string
-#     hml = string
-#     prd = string
-#   })
-#   description = "The ID of the project where this VPC will be created"
-# }
-
-# variable "network_name" {
-#   type = object({
-#     dev  = string
-#     hml = string
-#     prd = string
-#   })
-#   description = "The name of the network being created"
-# }
-
 variable "network_name" {
   type        = string
   description = "The name of the network being created"

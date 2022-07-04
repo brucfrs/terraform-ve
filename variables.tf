@@ -18,7 +18,7 @@ variable "gcp_credentials" {
     hml = string
     prd = string
   })
-  description = "The ID of the project where this VPC will be created"
+  description = "The json key name of the google cloud credentials for each project"
   default = {
     dev = "terraform-dev.json"
     hml = "terraform-hml.json"
@@ -35,7 +35,7 @@ variable "network_name" {
     hml = string
     prd = string
   })
-  description = "The name of the network being created"
+  description = "The name of the network being created in each project"
   default = {
     dev = "vpc-dev"
     hml = "vpc-hml"
@@ -77,13 +77,14 @@ variable "mtu" {
 /******************************************
 	Subnet variables
  *****************************************/
+
 variable "subnet_name" {
   type = object({
     dev = string
     hml = string
     prd = string
   })
-  description = "The name of the network being created"
+  description = "The name of the subnetwork that will be created"
   default = {
     dev = "subnet-dev"
     hml = "subnet-hml"
@@ -97,7 +98,7 @@ variable "subnet_ip" {
     hml = string
     prd = string
   })
-  description = "The name of the network being created"
+  description = "The ip range of the subnet that will be created"
   default = {
     dev = "10.0.0.0/24"
     hml = "10.1.0.0/24"
@@ -111,7 +112,7 @@ variable "secundary_range_name_k8s" {
     hml = string
     prd = string
   })
-  description = "The name of the network being created"
+  description = "The name of the secondary ip range that will be created for the k8s pods"
   default = {
     dev = "subnet-dev-k8s"
     hml = "subnet-hml-k8s"
@@ -125,7 +126,7 @@ variable "secundary_ip_cidr_range_k8s" {
     hml = string
     prd = string
   })
-  description = "The name of the network being created"
+  description = "The ip range of the secondary ip range that will be created for the k8s pods"
   default = {
     dev = "10.0.1.0/24"
     hml = "10.1.1.0/24"
@@ -139,7 +140,7 @@ variable "secundary_range_name_services" {
     hml = string
     prd = string
   })
-  description = "The name of the network being created"
+  description = "The name of the secondary ip range that will be created for the k8s services"
   default = {
     dev = "subnet-dev-services"
     hml = "subnet-hml-services"
@@ -153,7 +154,7 @@ variable "secundary_ip_cidr_range_services" {
     hml = string
     prd = string
   })
-  description = "The name of the network being created"
+  description = "The ip range of the secondary ip range that will be created for the k8s services"
   default = {
     dev = "10.0.2.0/24"
     hml = "10.1.2.0/24"
@@ -166,18 +167,6 @@ variable "subnet_region" {
   description = "The list of subnets being created"
   default     = "us-east1"
 }
-
-# variable "routes" {
-#   type        = list(map(string))
-#   description = "List of routes being created in this VPC"
-#   default     = []
-# }
-
-# variable "firewall_rules" {
-#   type        = any
-#   description = "List of firewall rules"
-#   default     = []
-# }
 
 /******************************************
 	GKE variables
@@ -231,13 +220,14 @@ variable "cluster_resource_labels" {
 /******************************************
 	PostgreSQL variables
  *****************************************/
+
 variable "subnet_name_postgre" {
   type = object({
     dev = string
     hml = string
     prd = string
   })
-  description = "The name of the network being created"
+  description = "The subnet name that postreg instance will be created"
   default = {
     dev = "subnet-dev-postgre"
     hml = "subnet-hml-postgre"
@@ -271,4 +261,28 @@ variable "database_name" {
     hml = "database-hml-postgre"
     prd = "database-prd-postgre"
   }
+}
+
+
+variable "disk_autoresize" {
+  description = "Configuration to increase storage size."
+  type        = bool
+  default     = true
+}
+
+variable "disk_autoresize_limit" {
+  description = "The maximum size to which storage can be auto increased."
+  type        = number
+  default     = 0
+}
+
+variable "disk_size" {
+  description = "The disk size for the master instance."
+  default     = 50
+}
+
+variable "disk_type" {
+  description = "The disk type for the master instance."
+  type        = string
+  default     = "PD_SSD"
 }

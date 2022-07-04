@@ -38,7 +38,7 @@ variable "network_name" {
 variable "network_project_id" {
   type        = string
   description = "The project ID of the shared VPC's host (for shared vpc support)"
-  default     = ""
+  default = ""
 }
 
 variable "subnet_name" {
@@ -222,13 +222,6 @@ variable "stub_domains" {
   description = "Map of stub domains and their resolvers to forward DNS queries for a certain domain to an external DNS server"
   default     = {}
 }
-
-# variable "upstream_nameservers" {
-#   type        = list(string)
-#   description = "If specified, the values replace the nameservers taken by default from the node’s /etc/resolv.conf"
-#   default     = []
-# }
-
 variable "non_masquerade_cidrs" {
   type        = list(string)
   description = "List of strings in CIDR notation that specify the IP address ranges that do not use IP masquerading."
@@ -293,28 +286,11 @@ variable "issue_client_certificate" {
   default     = false
 }
 
-# variable "cluster_ipv4_cidr" {
-#   type        = string
-#   description = "The IP address range of the kubernetes pods in this cluster. Default is an automatically assigned CIDR."
-# }
-
 variable "cluster_resource_labels" {
   type        = map(string)
   description = "The GCE resource labels (a map of key/value pairs) to be applied to the cluster"
   default     = {}
 }
-
-# variable "skip_provisioners" {
-#   type        = bool
-#   description = "Flag to skip all local-exec provisioners. It breaks `stub_domains` and `upstream_nameservers` variables functionality."
-#   default     = false
-# }
-
-# variable "authenticator_security_group" {
-#   type        = string
-#   description = "The name of the RBAC security group for use with Google security groups in Kubernetes RBAC. Group name must be in format gke-security-groups@yourdomain.com"
-#   default     = null
-# }
 
 variable "identity_namespace" {
   description = "The workload pool to attach all Kubernetes service accounts to. (Default value of `enabled` automatically sets project-based pool `[project_id].svc.id.goog`)"

@@ -28,12 +28,6 @@ resource "google_compute_firewall" "intra_egress" {
 }
 
 
-/******************************************
-  Allow GKE master to hit non 443 ports for
-  Webhooks/Admission Controllers
-
-  https://github.com/kubernetes/kubernetes/issues/79739
- *****************************************/
 resource "google_compute_firewall" "master_webhooks" {
   count       = var.add_cluster_firewall_rules || var.add_master_webhook_firewall_rules ? 1 : 0
   name        = "gke-${substr(var.name, 0, min(25, length(var.name)))}-webhooks"
@@ -63,6 +57,7 @@ resource "google_compute_firewall" "master_webhooks" {
   Create shadow firewall rules to capture the
   traffic flow between the managed firewall rules
  *****************************************/
+ 
 resource "google_compute_firewall" "shadow_allow_pods" {
   count = var.add_shadow_firewall_rules ? 1 : 0
 

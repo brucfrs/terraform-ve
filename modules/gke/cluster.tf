@@ -1,6 +1,7 @@
 /******************************************
   Create Container Cluster
  *****************************************/
+
 resource "google_container_cluster" "primary" {
 
   name            = var.name
@@ -10,7 +11,6 @@ resource "google_container_cluster" "primary" {
 
   location       = local.location
   node_locations = local.node_locations
-  # cluster_ipv4_cidr = var.secundary_ip_cidr_range_k8s
   network = "projects/${local.network_project_id}/global/networks/${var.network_name}"
   dynamic "network_policy" {
     for_each = local.cluster_network_policy
@@ -60,18 +60,6 @@ resource "google_container_cluster" "primary" {
   default_max_pods_per_node   = var.default_max_pods_per_node
   enable_shielded_nodes       = var.enable_shielded_nodes
   enable_binary_authorization = var.enable_binary_authorization
-  # dynamic "master_authorized_networks_config" {
-  #   for_each = local.master_authorized_networks_config
-  #   content {
-  #     dynamic "cidr_blocks" {
-  #       for_each = master_authorized_networks_config.value.cidr_blocks
-  #       content {
-  #         cidr_block   = lookup(cidr_blocks.value, "cidr_block", "")
-  #         display_name = lookup(cidr_blocks.value, "display_name", "")
-  #       }
-  #     }
-  #   }
-  # }
 
   master_auth {
     client_certificate_config {
@@ -128,12 +116,6 @@ resource "google_container_cluster" "primary" {
         start_time     = maintenance_exclusion.value.start_time
         end_time       = maintenance_exclusion.value.end_time
 
-        # dynamic "exclusion_options" {
-        #   for_each = maintenance_exclusion.value.exclusion_scope == null ? [] : [maintenance_exclusion.value.exclusion_scope]
-        #   content {
-        #     scope = exclusion_options.value
-        #   }
-        # }
       }
     }
   }
@@ -171,14 +153,6 @@ resource "google_container_cluster" "primary" {
         lookup(local.node_pools_tags, var.node_pools[0].name, []),
       )
 
-      # dynamic "workload_metadata_config" {
-      #   for_each = local.cluster_node_metadata_config
-
-      #   content {
-      #     mode = workload_metadata_config.value.mode
-      #   }
-      # }
-
       metadata = var.node_pools_metadata["all"]
 
 
@@ -208,15 +182,6 @@ resource "google_container_cluster" "primary" {
 
   remove_default_node_pool = var.remove_default_node_pool
 
-  # dynamic "database_encryption" {
-  #   for_each = var.database_encryption
-
-  #   content {
-  #     key_name = database_encryption.value.key_name
-  #     state    = database_encryption.value.state
-  #   }
-  # }
-
   dynamic "workload_identity_config" {
     for_each = local.cluster_workload_identity_config
 
@@ -224,11 +189,4 @@ resource "google_container_cluster" "primary" {
       workload_pool = workload_identity_config.value.workload_pool
     }
   }
-
-  # dynamic "authenticator_groups_config" {
-  #   for_each = local.cluster_authenticator_security_group
-  #   content {
-  #     security_group = authenticator_groups_config.value.security_group
-  #   }
-  # }
 }
