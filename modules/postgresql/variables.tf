@@ -287,3 +287,4 @@ variable "enable_default_user" {
   type        = bool
   default     = true
 }
+

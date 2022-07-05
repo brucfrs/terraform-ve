@@ -6,7 +6,7 @@ variable "project_id" {
   })
   description = "The ID of the project where this VPC will be created"
   default = {
-    dev = "projeto-354115"
+    dev = "terraform-dev-354612"
     hml = "vivae-hml"
     prd = "terraform-prd-354612"
   }
@@ -243,7 +243,7 @@ variable "subnet_ip_postgre" {
   })
   description = "The ip range to allow connecting from/to Cloud SQL"
   default = {
-    dev = "10.10.0.0/24"
+    dev = "10.10.0.0/"
     hml = "10.11.0.0/24"
     prd = "10.12.0.0/24"
   }

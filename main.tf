@@ -31,6 +31,10 @@ module "subnets" {
   secundary_range_name_services    = lookup(var.secundary_range_name_services, local.env)
   secundary_ip_cidr_range_services = lookup(var.secundary_ip_cidr_range_services, local.env)
   subnet_region                    = var.subnet_region
+
+    depends_on = [
+    module.vpc
+  ]
 }
 
 # /******************************************
@@ -90,19 +94,19 @@ data "google_compute_subnetwork" "subnetwork" {
 }
 
 module "gke" {
-  source                      = "./modules/gke"
-  project_id                  = lookup(var.project_id, local.env)
+  source     = "./modules/gke"
+  project_id = lookup(var.project_id, local.env)
   #network_project_id          = lookup(var.project_id, local.env)
-  name                        = "cluster-gke-${local.env}"
-  regional                    = lookup(var.gke_location, local.env)
-  region                      = var.region
-  network_name                = lookup(var.network_name, local.env)
-  subnet_name                 = lookup(var.subnet_name, local.env)
-  ip_range_pods               = lookup(var.secundary_range_name_k8s, local.env)
-  ip_range_services           = lookup(var.secundary_range_name_services, local.env)
-  create_service_account      = false
-  service_account             = var.compute_engine_service_account
-  secundary_ip_cidr_range_k8s = lookup(var.secundary_ip_cidr_range_k8s, local.env)
+  name                            = "cluster-gke-${local.env}"
+  regional                        = lookup(var.gke_location, local.env)
+  region                          = var.region
+  network_name                    = lookup(var.network_name, local.env)
+  subnet_name                     = lookup(var.subnet_name, local.env)
+  ip_range_pods                   = lookup(var.secundary_range_name_k8s, local.env)
+  ip_range_services               = lookup(var.secundary_range_name_services, local.env)
+  create_service_account          = false
+  service_account                 = var.compute_engine_service_account
+  secundary_ip_cidr_range_k8s     = lookup(var.secundary_ip_cidr_range_k8s, local.env)
   default_max_pods_per_node       = var.default_max_pods_per_node
   remove_default_node_pool        = true
   enable_vertical_pod_autoscaling = false
@@ -141,16 +145,15 @@ module "gke" {
 # 	Database PostgreSQL
 #  *****************************************/
 
+
 locals {
   read_replica_ip_configuration = {
     ipv4_enabled       = true
-    require_ssl        = false
-    private_network    = lookup(var.network_name, local.env)
+    require_ssl        = true
+    private_network    = "projects/${lookup(var.project_id, local.env)}/global/networks/${lookup(var.network_name, local.env)}"
     allocated_ip_range = null
     authorized_networks = [
       {
-        # name  = "${var.project_id}-cidr"
-        # value = var.pg_ha_external_ip_range
         name  = lookup(var.subnet_name_postgre, local.env)
         value = lookup(var.subnet_ip_postgre, local.env)
       },
@@ -185,12 +188,12 @@ module "postgresql" {
   ip_configuration = {
     ipv4_enabled       = true
     require_ssl        = true
-    private_network    = lookup(var.network_name, local.env)
+    private_network    = "projects/${lookup(var.project_id, local.env)}/global/networks/${lookup(var.network_name, local.env)}" #lookup(var.network_name, local.env)
     allocated_ip_range = null
     authorized_networks = [
       {
         name  = lookup(var.subnet_name_postgre, local.env)
-        value = lookup(var.subnet_ip_postgre, local.env)
+        value = lookup(var.subnet_ip, local.env)
       },
     ]
   }
@@ -275,5 +278,9 @@ module "postgresql" {
       password = "abcdefg"
       host     = "localhost"
     },
+  ]
+    depends_on = [
+    module.vpc,
+    module.subnets
   ]
 }
