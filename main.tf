@@ -10,6 +10,7 @@ module "vpc" {
   description                            = var.description
   delete_default_internet_gateway_routes = var.delete_default_internet_gateway_routes
   mtu                                    = var.mtu
+  private_ip_range_name_postegre           = var.private_ip_range_name_postegre
 
   depends_on = [
     google_project_service.api_compute,
@@ -141,15 +142,15 @@ module "gke" {
   ]
 }
 
-# /******************************************
-# 	Database PostgreSQL
-#  *****************************************/
+/******************************************
+	Database PostgreSQL
+ *****************************************/
 
 
 locals {
   read_replica_ip_configuration = {
-    ipv4_enabled       = true
-    require_ssl        = true
+    ipv4_enabled       = false
+    require_ssl        = false
     private_network    = "projects/${lookup(var.project_id, local.env)}/global/networks/${lookup(var.network_name, local.env)}"
     allocated_ip_range = null
     authorized_networks = [
@@ -163,7 +164,7 @@ locals {
 
 module "postgresql" {
   source               = "./modules/postgresql"
-  name                 = "postgre-${local.env}"
+  name                 = "postgre-${local.env}-2"
   random_instance_name = true
   project_id           = lookup(var.project_id, local.env)
   database_version     = "POSTGRES_9_6"
@@ -186,16 +187,11 @@ module "postgresql" {
   }
 
   ip_configuration = {
-    ipv4_enabled       = true
-    require_ssl        = true
+    ipv4_enabled       = false
+    require_ssl        = false
     private_network    = "projects/${lookup(var.project_id, local.env)}/global/networks/${lookup(var.network_name, local.env)}" #lookup(var.network_name, local.env)
     allocated_ip_range = null
-    authorized_networks = [
-      {
-        name  = lookup(var.subnet_name_postgre, local.env)
-        value = lookup(var.subnet_ip, local.env)
-      },
-    ]
+    authorized_networks = [] #acesso a ip publico
   }
 
   backup_configuration = {
@@ -209,76 +205,76 @@ module "postgresql" {
   }
 
   // Read replica configurations
-  read_replica_name_suffix = "-test"
-  read_replicas = [
-    {
-      name                  = "0"
-      zone                  = "us-east1-b"
-      tier                  = "db-custom-1-3840"
-      ip_configuration      = local.read_replica_ip_configuration
-      database_flags        = [{ name = "autovacuum", value = "off" }]
-      disk_autoresize       = var.disk_autoresize
-      disk_autoresize_limit = var.disk_autoresize_limit
-      disk_size             = var.disk_size
-      disk_type             = var.disk_type
-      user_labels           = { managed = "terraform" }
-      encryption_key_name   = null
-    },
-    # {
-    #   name                  = "1"
-    #   zone                  = "us-central1-b"
-    #   tier                  = "db-custom-1-3840"
-    #   ip_configuration      = local.read_replica_ip_configuration
-    #   database_flags        = [{ name = "autovacuum", value = "off" }]
-    #   disk_autoresize       = null
-    #   disk_autoresize_limit = null
-    #   disk_size             = null
-    #   disk_type             = "PD_HDD"
-    #   user_labels           = { bar = "baz" }
-    #   encryption_key_name   = null
-    # },
-    # {
-    #   name                  = "2"
-    #   zone                  = "us-central1-c"
-    #   tier                  = "db-custom-1-3840"
-    #   ip_configuration      = local.read_replica_ip_configuration
-    #   database_flags        = [{ name = "autovacuum", value = "off" }]
-    #   disk_autoresize       = null
-    #   disk_autoresize_limit = null
-    #   disk_size             = null
-    #   disk_type             = "PD_HDD"
-    #   user_labels           = { bar = "baz" }
-    #   encryption_key_name   = null
-    # },
-  ]
+  # read_replica_name_suffix = "-test"
+  # read_replicas = [
+  #   {
+  #     name                  = "0"
+  #     zone                  = "us-east1-b"
+  #     tier                  = "db-custom-1-3840"
+  #     ip_configuration      = local.read_replica_ip_configuration
+  #     database_flags        = [{ name = "autovacuum", value = "off" }]
+  #     disk_autoresize       = var.disk_autoresize
+  #     disk_autoresize_limit = var.disk_autoresize_limit
+  #     disk_size             = var.disk_size
+  #     disk_type             = var.disk_type
+  #     user_labels           = { managed = "terraform" }
+  #     encryption_key_name   = null
+  #   },
+  #   # {
+  #   #   name                  = "1"
+  #   #   zone                  = "us-central1-b"
+  #   #   tier                  = "db-custom-1-3840"
+  #   #   ip_configuration      = local.read_replica_ip_configuration
+  #   #   database_flags        = [{ name = "autovacuum", value = "off" }]
+  #   #   disk_autoresize       = null
+  #   #   disk_autoresize_limit = null
+  #   #   disk_size             = null
+  #   #   disk_type             = "PD_HDD"
+  #   #   user_labels           = { bar = "baz" }
+  #   #   encryption_key_name   = null
+  #   # },
+  #   # {
+  #   #   name                  = "2"
+  #   #   zone                  = "us-central1-c"
+  #   #   tier                  = "db-custom-1-3840"
+  #   #   ip_configuration      = local.read_replica_ip_configuration
+  #   #   database_flags        = [{ name = "autovacuum", value = "off" }]
+  #   #   disk_autoresize       = null
+  #   #   disk_autoresize_limit = null
+  #   #   disk_size             = null
+  #   #   disk_type             = "PD_HDD"
+  #   #   user_labels           = { bar = "baz" }
+  #   #   encryption_key_name   = null
+  #   # },
+  # ]
 
-  db_name      = lookup(var.database_name, local.env)
-  db_charset   = "UTF8"
-  db_collation = "en_US.UTF8"
+  # db_name      = lookup(var.database_name, local.env)
+  # db_charset   = "UTF8"
+  # db_collation = "en_US.UTF8"
 
-  additional_databases = [
-    {
-      name      = "Database additional"
-      charset   = "UTF8"
-      collation = "en_US.UTF8"
-    },
-  ]
+  # additional_databases = [
+  #   {
+  #     name      = "Database additional"
+  #     charset   = "UTF8"
+  #     collation = "en_US.UTF8"
+  #   },
+  # ]
 
-  user_name     = "tftest"
-  user_password = "foobar"
+  # user_name     = "tftest"
+  # user_password = "foobar"
 
-  additional_users = [
-    {
-      name     = "tftest2"
-      password = "abcdefg"
-      host     = "localhost"
-    },
-    {
-      name     = "tftest3"
-      password = "abcdefg"
-      host     = "localhost"
-    },
-  ]
+  # additional_users = [
+  #   {
+  #     name     = "tftest2"
+  #     password = "abcdefg"
+  #     host     = "localhost"
+  #   },
+  #   {
+  #     name     = "tftest3"
+  #     password = "abcdefg"
+  #     host     = "localhost"
+  #   },
+  # ]
     depends_on = [
     module.vpc,
     module.subnets

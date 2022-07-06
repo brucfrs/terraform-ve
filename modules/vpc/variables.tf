@@ -35,3 +35,7 @@ variable "mtu" {
   type        = number
   description = "The network MTU (If set to 0, meaning MTU is unset - defaults to '1460'). Recommended values: 1460 (default for historic reasons), 1500 (Internet default), or 8896 (for Jumbo packets). Allowed are all values in the range 1300 to 8896, inclusively."
 }
+variable "private_ip_range_name_postegre" {
+  type = string
+  description = ""
+}

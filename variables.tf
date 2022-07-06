@@ -74,6 +74,12 @@ variable "mtu" {
   default     = 1460
 }
 
+variable "private_ip_range_name_postegre" {
+  type = string
+  description = ""
+  default = "postegre-dev-range"
+}
+
 /******************************************
 	Subnet variables
  *****************************************/
