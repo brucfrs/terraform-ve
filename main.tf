@@ -10,7 +10,7 @@ module "vpc" {
   description                            = var.description
   delete_default_internet_gateway_routes = var.delete_default_internet_gateway_routes
   mtu                                    = var.mtu
-  private_ip_range_name_postegre           = var.private_ip_range_name_postegre
+  private_ip_range_name_postegre         = var.private_ip_range_name_postegre
 
   depends_on = [
     google_project_service.api_compute,

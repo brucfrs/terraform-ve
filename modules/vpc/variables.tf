@@ -37,5 +37,5 @@ variable "mtu" {
 }
 variable "private_ip_range_name_postegre" {
   type = string
-  description = ""
+  description = "The name of the private ip range of the private service network range for postegre."
 }

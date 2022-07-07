@@ -75,9 +75,18 @@ variable "mtu" {
 }
 
 variable "private_ip_range_name_postegre" {
-  type = string
-  description = ""
-  default = "postegre-dev-range"
+  type = object({
+    dev = string
+    hml = string
+    prd = string
+  })
+  description = "The name of the private ip range of the private service network range for postegre."
+  default = {
+    dev = "postegre-dev-range"
+    hml = "postegre-hml-range"
+    prd = "postegre-prd-range"
+
+  }
 }
 
 /******************************************

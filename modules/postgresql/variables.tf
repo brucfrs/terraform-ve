@@ -238,7 +238,7 @@ variable "iam_user_emails" {
 variable "create_timeout" {
   description = "The optional timout that is applied to limit long database creates."
   type        = string
-  default     = "15m"
+  default     = "20m"
 }
 
 variable "update_timeout" {
