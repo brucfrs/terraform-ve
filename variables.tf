@@ -301,3 +301,114 @@ variable "disk_type" {
   type        = string
   default     = "PD_SSD"
 }
+/******************************************
+	PostgreSQL variables
+ *****************************************/
+
+ variable "memorystore_zones" {
+  type = list(string)
+  description = "Zones where memcache nodes should be provisioned. If not provided, all zones will be used."
+  default = null
+ }
+
+variable "memorystore_name" {
+  type = object({
+    dev = string
+    hml = string
+    prd = string
+  })
+  description = "The ID of the instance or a fully qualified identifier for the instance."
+  default = {
+    dev = "redis-dev"
+    hml = "redis-hml"
+    prd = "redis-prd"
+  }
+}
+
+variable "tier" {
+  type = string
+  description = "value"
+  default = "STANDARD_HA"
+}
+
+variable "memorystore_location_id" {
+  type = string
+  description = "The ID of the instance or a fully qualified identifier for the instance."
+  default = "us-east1-b"
+
+}
+
+variable "memorystore_alternative_location_id" {
+  type = string
+  description = "The ID of the instance or a fully qualified identifier for the instance."
+  default = "us-east1-c"
+}
+
+variable "auth_enabled" {
+  type = string
+  description = ""
+  default = false
+}
+
+variable "transit_encryption_mode" {
+  type = string
+  description = ""
+  default = "DISABLED"
+}
+
+variable "redis_memory_size_gb" {
+  type = object({
+    dev = number
+    hml = number
+    prd = number
+  })
+  description = "The ID of the instance or a fully qualified identifier for the instance."
+  default = {
+    dev = 1
+    hml = 1
+    prd = 5
+  }
+}
+
+
+variable "redis_replica_number" {
+  type = object({
+    dev = number
+    hml = number
+    prd = number
+  })
+  description = "The ID of the instance or a fully qualified identifier for the instance."
+  default = {
+    dev = null
+    hml = null
+    prd = 1
+  }
+}
+
+variable "redis_version" {
+  type = string
+  description = ""
+  default = "REDIS_6_X"
+}
+
+variable "display_name" {
+  type = object({
+    dev = string
+    hml = string
+    prd = string
+  })
+  description = "The ID of the instance or a fully qualified identifier for the instance."
+  default = {
+    dev = "redis-instance-dev"
+    hml = "redis-instance-hml"
+    prd = "redis-instance-prd"
+  }
+}
+
+variable "memorystore_labels" {
+  type = map(string)
+  description = ""
+  default = {
+    "managed" = "terraform"
+  }
+}
