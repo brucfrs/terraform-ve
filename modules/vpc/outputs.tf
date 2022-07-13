@@ -22,3 +22,7 @@
 # #   value       = var.shared_vpc_host && length(google_compute_shared_vpc_host_project.shared_vpc_host) > 0 ? google_compute_shared_vpc_host_project.shared_vpc_host.*.project[0] : google_compute_network.network.project
 # #   description = "VPC project id"
 # # }
+
+output "vpc_database_service_range" {
+  value = google_compute_global_address.private_ip_address_postegre.name  #"${google_compute_global_address.private_ip_address_postegre.address}/${google_compute_global_address.private_ip_address_postegre.prefix_length}"
+}

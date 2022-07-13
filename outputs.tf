@@ -117,3 +117,7 @@
 # output "instances" {
 #   value = module.pg.instances
 # }
+
+output "service_range" {
+  value = module.vpc.vpc_database_service_range 
+}

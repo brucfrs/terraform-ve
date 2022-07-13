@@ -412,3 +412,8 @@ variable "memorystore_labels" {
     "managed" = "terraform"
   }
 }
+
+# variable "vpc_database_service_range" {
+#   type = string
+#   default = module.vpc.vpc_database_service_range
+# }

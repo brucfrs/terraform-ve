@@ -302,6 +302,7 @@ module "memstore" {
   labels                  = var.memorystore_labels
   transit_encryption_mode = var.transit_encryption_mode
   auth_enabled            = var.auth_enabled
+  reserved_ip_range       = module.vpc.vpc_database_service_range
 
   depends_on = [
     google_project_service.api-redis
