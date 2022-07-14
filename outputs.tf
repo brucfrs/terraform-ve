@@ -119,5 +119,5 @@
 # }
 
 output "service_range" {
-  value = module.vpc.vpc_database_service_range 
+  value = module.vpc.vpc_database_service_range
 }

@@ -10,7 +10,7 @@ module "vpc" {
   description                            = var.description
   delete_default_internet_gateway_routes = var.delete_default_internet_gateway_routes
   mtu                                    = var.mtu
-  private_ip_range_name_postegre         = lookup(var.private_ip_range_name_postegre , local.env)
+  private_ip_range_name_postegre         = lookup(var.private_ip_range_name_postegre, local.env)
 
   depends_on = [
     google_project_service.api_compute,
@@ -33,7 +33,7 @@ module "subnets" {
   secundary_ip_cidr_range_services = lookup(var.secundary_ip_cidr_range_services, local.env)
   subnet_region                    = var.subnet_region
 
-    depends_on = [
+  depends_on = [
     module.vpc
   ]
 }
@@ -298,14 +298,33 @@ module "memstore" {
   memory_size_gb          = lookup(var.redis_memory_size_gb, local.env)
   replica_count           = lookup(var.redis_replica_number, local.env)
   redis_version           = var.redis_version
-  display_name            = lookup(var.display_name, local.env) 
+  display_name            = lookup(var.display_name, local.env)
   labels                  = var.memorystore_labels
   transit_encryption_mode = var.transit_encryption_mode
   auth_enabled            = var.auth_enabled
   reserved_ip_range       = module.vpc.vpc_database_service_range
 
   depends_on = [
-    google_project_service.api-redis
+    google_project_service.api_redis
+  ]
+
+}
+
+
+/******************************************
+	Artifact Registry 
+ *****************************************/
+module "artifact-registry" {
+  source = "./modules/artifact-registry"
+
+  name        = var.artifact_registry_name
+  region      = var.region
+  description = var.artifact_registry_description
+  format      = var.artifact_registry_format #"DOCKER"
+  labels      = var.artifact_registry_labels
+
+  depends_on = [
+    google_project_service.api_artifact
   ]
 
 }

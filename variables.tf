@@ -302,14 +302,14 @@ variable "disk_type" {
   default     = "PD_SSD"
 }
 /******************************************
-	PostgreSQL variables
+	Redis variables
  *****************************************/
 
- variable "memorystore_zones" {
-  type = list(string)
+variable "memorystore_zones" {
+  type        = list(string)
   description = "Zones where memcache nodes should be provisioned. If not provided, all zones will be used."
-  default = null
- }
+  default     = null
+}
 
 variable "memorystore_name" {
   type = object({
@@ -326,34 +326,34 @@ variable "memorystore_name" {
 }
 
 variable "tier" {
-  type = string
+  type        = string
   description = "value"
-  default = "STANDARD_HA"
+  default     = "STANDARD_HA"
 }
 
 variable "memorystore_location_id" {
-  type = string
+  type        = string
   description = "The ID of the instance or a fully qualified identifier for the instance."
-  default = "us-east1-b"
+  default     = "us-east1-b"
 
 }
 
 variable "memorystore_alternative_location_id" {
-  type = string
+  type        = string
   description = "The ID of the instance or a fully qualified identifier for the instance."
-  default = "us-east1-c"
+  default     = "us-east1-c"
 }
 
 variable "auth_enabled" {
-  type = string
+  type        = string
   description = ""
-  default = false
+  default     = false
 }
 
 variable "transit_encryption_mode" {
-  type = string
+  type        = string
   description = ""
-  default = "DISABLED"
+  default     = "DISABLED"
 }
 
 variable "redis_memory_size_gb" {
@@ -386,9 +386,9 @@ variable "redis_replica_number" {
 }
 
 variable "redis_version" {
-  type = string
+  type        = string
   description = ""
-  default = "REDIS_6_X"
+  default     = "REDIS_6_X"
 }
 
 variable "display_name" {
@@ -406,14 +406,39 @@ variable "display_name" {
 }
 
 variable "memorystore_labels" {
-  type = map(string)
+  type        = map(string)
   description = ""
   default = {
     "managed" = "terraform"
   }
 }
 
-# variable "vpc_database_service_range" {
-#   type = string
-#   default = module.vpc.vpc_database_service_range
-# }
+/******************************************
+  Artifact Registry variables
+ *****************************************/
+
+variable "artifact_registry_name" {
+  type        = string
+  description = ""
+  default     = "vivae"
+}
+
+variable "artifact_registry_description" {
+  type        = string
+  description = ""
+  default     = "vivae"
+}
+
+variable "artifact_registry_format" {
+  type        = string
+  description = ""
+  default     = "DOCKER"
+}
+
+variable "artifact_registry_labels" {
+  type        = map(string)
+  description = ""
+  default = {
+    "managed" = "terraform"
+  }
+}

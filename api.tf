@@ -13,8 +13,15 @@ resource "google_project_service" "api_container" {
   disable_on_destroy = false
 }
 
-resource "google_project_service" "api-redis" {
-  service = "redis.googleapis.com"
+resource "google_project_service" "api_redis" {
+  service            = "redis.googleapis.com"
   disable_on_destroy = false
-  
+
+}
+
+resource "google_project_service" "api_artifact" {
+  service            = "artifactregistry.googleapis.com"
+  disable_on_destroy = false
+
+
 }
