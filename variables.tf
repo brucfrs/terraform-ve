@@ -442,3 +442,13 @@ variable "artifact_registry_labels" {
     "managed" = "terraform"
   }
 }
+
+/******************************************
+  Artifact Registry variables
+ *****************************************/
+
+variable "repository-name" {
+  type        = string
+  default     = "vivae"
+  description = ""
+}

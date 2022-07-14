@@ -285,30 +285,30 @@ module "subnets" {
 	Memorystore Redis
  *****************************************/
 
-module "memstore" {
-  source = "./modules/memorystore-redis"
+# module "memstore" {
+#   source = "./modules/memorystore-redis"
 
-  name                    = lookup(var.memorystore_name, local.env)
-  project_id              = lookup(var.project_id, local.env)
-  region                  = var.region
-  tier                    = var.tier
-  location_id             = var.memorystore_location_id
-  alternative_location_id = var.memorystore_alternative_location_id
-  authorized_network      = lookup(var.network_name, local.env)
-  memory_size_gb          = lookup(var.redis_memory_size_gb, local.env)
-  replica_count           = lookup(var.redis_replica_number, local.env)
-  redis_version           = var.redis_version
-  display_name            = lookup(var.display_name, local.env)
-  labels                  = var.memorystore_labels
-  transit_encryption_mode = var.transit_encryption_mode
-  auth_enabled            = var.auth_enabled
-  reserved_ip_range       = module.vpc.vpc_database_service_range
+#   name                    = lookup(var.memorystore_name, local.env)
+#   project_id              = lookup(var.project_id, local.env)
+#   region                  = var.region
+#   tier                    = var.tier
+#   location_id             = var.memorystore_location_id
+#   alternative_location_id = var.memorystore_alternative_location_id
+#   authorized_network      = lookup(var.network_name, local.env)
+#   memory_size_gb          = lookup(var.redis_memory_size_gb, local.env)
+#   replica_count           = lookup(var.redis_replica_number, local.env)
+#   redis_version           = var.redis_version
+#   display_name            = lookup(var.display_name, local.env)
+#   labels                  = var.memorystore_labels
+#   transit_encryption_mode = var.transit_encryption_mode
+#   auth_enabled            = var.auth_enabled
+#   reserved_ip_range       = module.vpc.vpc_database_service_range
 
-  depends_on = [
-    google_project_service.api_redis
-  ]
+#   depends_on = [
+#     google_project_service.api_redis
+#   ]
 
-}
+# }
 
 
 /******************************************
@@ -325,6 +325,21 @@ module "artifact-registry" {
 
   depends_on = [
     google_project_service.api_artifact
+  ]
+
+}
+
+/******************************************
+	Cloud source-repository
+ *****************************************/
+
+module "source-repository" {
+  source = "./modules/source-repository"
+
+  name    = var.repository-name
+  project = var.project_id["dev"]
+  depends_on = [
+    google_project_service.api_repo
   ]
 
 }

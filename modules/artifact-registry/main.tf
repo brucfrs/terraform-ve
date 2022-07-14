@@ -14,3 +14,4 @@ resource "google_project_service" "project" {
   disable_dependent_services = true
   disable_on_destroy = true
 }
+//adicionar firestore api se for criar aqui
