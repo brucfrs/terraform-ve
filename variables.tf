@@ -444,11 +444,66 @@ variable "artifact_registry_labels" {
 }
 
 /******************************************
-  Artifact Registry variables
+  Cloud Source Repository variables
  *****************************************/
 
 variable "repository-name" {
   type        = string
-  default     = "vivae"
   description = ""
+  default     = "vivae"
+
+}
+
+/******************************************
+  Cloud Storage variables
+ *****************************************/
+
+variable "bucket-name" {
+  type        = string
+  description = ""
+  default     = "vivae-audit"
+
+}
+
+variable "storage_class" {
+  type        = string
+  description = ""
+  default     = "STANDARD"
+
+}
+
+variable "versioning" {
+  type        = string
+  description = ""
+  default     = true
+
+}
+
+variable "storage_labels" {
+  type        = map(string)
+  description = ""
+  default = {
+    "managed" = "terraform"
+  }
+
+}
+
+# variable "retention_period" {
+#   type        = number
+#   description = ""
+#   default     = 2592000
+
+# }
+
+variable "life_cycle_days" {
+  type        = number
+  description = ""
+  default     = 360
+}
+
+variable "life_cycle_action" {
+  type        = string
+  description = ""
+  default     = "Delete"
+
 }

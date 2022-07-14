@@ -330,7 +330,7 @@ module "artifact-registry" {
 }
 
 /******************************************
-	Cloud source-repository
+	Cloud Source Repository
  *****************************************/
 
 module "source-repository" {
@@ -341,5 +341,30 @@ module "source-repository" {
   depends_on = [
     google_project_service.api_repo
   ]
+
+}
+
+/******************************************
+	Cloud Storage
+ *****************************************/
+
+module "cloud-storage" {
+  source = "./modules/cloud-storage"
+
+  name             = var.bucket-name
+  project_id       = lookup(var.project_id, local.env)
+  region           = var.region
+  storage_class    = var.storage_class
+  versioning       = var.versioning
+  labels           = var.storage_labels
+  # retention_period = var.retention_period
+  age              = var.life_cycle_days
+  action           = var.life_cycle_action
+
+
+
+  # depends_on = [
+  #   google_project_service.api_repo
+  # ]
 
 }
