@@ -24,5 +24,5 @@
 # # }
 
 output "vpc_database_service_range" {
-  value = google_compute_global_address.private_ip_address_postegre.name  #"${google_compute_global_address.private_ip_address_postegre.address}/${google_compute_global_address.private_ip_address_postegre.prefix_length}"
+  value = google_compute_global_address.private_ip_address_postegre.name
 }

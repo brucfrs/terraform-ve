@@ -14,7 +14,8 @@ module "vpc" {
 
   depends_on = [
     google_project_service.api_compute,
-    google_project_service.api_resourcemanager
+    google_project_service.api_resourcemanager,
+    google_project_service.api_network
   ]
 }
 
@@ -147,139 +148,69 @@ module "subnets" {
 #  *****************************************/
 
 
-# locals {
-#   read_replica_ip_configuration = {
-#     ipv4_enabled       = false
-#     require_ssl        = false
-#     private_network    = "projects/${lookup(var.project_id, local.env)}/global/networks/${lookup(var.network_name, local.env)}"
-#     allocated_ip_range = null
-#     authorized_networks = [
-#       {
-#         name  = lookup(var.subnet_name_postgre, local.env)
-#         value = lookup(var.subnet_ip_postgre, local.env)
-#       },
-#     ]
-#   }
-# }
+locals {
+  read_replica_ip_configuration = {
+    ipv4_enabled       = false
+    require_ssl        = false
+    private_network    = "projects/${lookup(var.project_id, local.env)}/global/networks/${lookup(var.network_name, local.env)}"
+    allocated_ip_range = null
+    authorized_networks = [
+      {
+        name  = lookup(var.subnet_name_postgre, local.env)
+        value = lookup(var.subnet_ip_postgre, local.env)
+      },
+    ]
+  }
+}
 
-# module "postgresql" {
-#   source               = "./modules/postgresql"
-#   name                 = "postgre-${local.env}-test"
-#   random_instance_name = true
-#   project_id           = lookup(var.project_id, local.env)
-#   database_version     = "POSTGRES_9_6"
-#   region               = "us-east1"
+module "postgresql" {
+  source               = "./modules/postgresql"
+  name                 = "postgre-${local.env}-test"
+  random_instance_name = true
+  project_id           = lookup(var.project_id, local.env)
+  database_version     = "POSTGRES_9_6"
+  region               = "us-east1"
 
-#   // Master configurations
-#   tier                            = "db-f1-micro"
-#   zone                            = "us-east1-b"
-#   availability_type               = "ZONAL"
-#   maintenance_window_day          = 7
-#   maintenance_window_hour         = 12
-#   maintenance_window_update_track = "stable"
+  // Master configurations
+  tier                            = "db-f1-micro"
+  zone                            = "us-east1-b"
+  availability_type               = "ZONAL"
+  maintenance_window_day          = 7
+  maintenance_window_hour         = 0
+  maintenance_window_update_track = "stable"
 
-#   deletion_protection = true
+  deletion_protection = true
 
-#   database_flags = [{ name = "autovacuum", value = "off" }]
+  database_flags = [{ name = "autovacuum", value = "off" }]
 
-#   user_labels = {
-#     managed = "terraform"
-#   }
+  user_labels = {
+    managed = "terraform",
+     env = local.env
+    
+  }
 
-#   ip_configuration = {
-#     ipv4_enabled       = false
-#     require_ssl        = false
-#     private_network    = "projects/${lookup(var.project_id, local.env)}/global/networks/${lookup(var.network_name, local.env)}" #lookup(var.network_name, local.env)
-#     allocated_ip_range = null
-#     authorized_networks = [] #acesso a ip publico
-#   }
+  ip_configuration = {
+    ipv4_enabled       = false
+    require_ssl        = false
+    private_network    = "projects/${lookup(var.project_id, local.env)}/global/networks/${lookup(var.network_name, local.env)}" #lookup(var.network_name, local.env)
+    allocated_ip_range = null
+    authorized_networks = [] #acesso a ip publico
+  }
 
-#   backup_configuration = {
-#     enabled                        = true
-#     start_time                     = "20:55"
-#     location                       = null
-#     point_in_time_recovery_enabled = false
-#     transaction_log_retention_days = null
-#     retained_backups               = 365
-#     retention_unit                 = "COUNT"
-#   }
-
-#   // Read replica configurations
-#   # read_replica_name_suffix = "-test"
-#   # read_replicas = [
-#   #   {
-#   #     name                  = "0"
-#   #     zone                  = "us-east1-b"
-#   #     tier                  = "db-custom-1-3840"
-#   #     ip_configuration      = local.read_replica_ip_configuration
-#   #     database_flags        = [{ name = "autovacuum", value = "off" }]
-#   #     disk_autoresize       = var.disk_autoresize
-#   #     disk_autoresize_limit = var.disk_autoresize_limit
-#   #     disk_size             = var.disk_size
-#   #     disk_type             = var.disk_type
-#   #     user_labels           = { managed = "terraform" }
-#   #     encryption_key_name   = null
-#   #   },
-#   #   # {
-#   #   #   name                  = "1"
-#   #   #   zone                  = "us-central1-b"
-#   #   #   tier                  = "db-custom-1-3840"
-#   #   #   ip_configuration      = local.read_replica_ip_configuration
-#   #   #   database_flags        = [{ name = "autovacuum", value = "off" }]
-#   #   #   disk_autoresize       = null
-#   #   #   disk_autoresize_limit = null
-#   #   #   disk_size             = null
-#   #   #   disk_type             = "PD_HDD"
-#   #   #   user_labels           = { bar = "baz" }
-#   #   #   encryption_key_name   = null
-#   #   # },
-#   #   # {
-#   #   #   name                  = "2"
-#   #   #   zone                  = "us-central1-c"
-#   #   #   tier                  = "db-custom-1-3840"
-#   #   #   ip_configuration      = local.read_replica_ip_configuration
-#   #   #   database_flags        = [{ name = "autovacuum", value = "off" }]
-#   #   #   disk_autoresize       = null
-#   #   #   disk_autoresize_limit = null
-#   #   #   disk_size             = null
-#   #   #   disk_type             = "PD_HDD"
-#   #   #   user_labels           = { bar = "baz" }
-#   #   #   encryption_key_name   = null
-#   #   # },
-#   # ]
-
-#   # db_name      = lookup(var.database_name, local.env)
-#   # db_charset   = "UTF8"
-#   # db_collation = "en_US.UTF8"
-
-#   # additional_databases = [
-#   #   {
-#   #     name      = "Database additional"
-#   #     charset   = "UTF8"
-#   #     collation = "en_US.UTF8"
-#   #   },
-#   # ]
-
-#   # user_name     = "tftest"
-#   # user_password = "foobar"
-
-#   # additional_users = [
-#   #   {
-#   #     name     = "tftest2"
-#   #     password = "abcdefg"
-#   #     host     = "localhost"
-#   #   },
-#   #   {
-#   #     name     = "tftest3"
-#   #     password = "abcdefg"
-#   #     host     = "localhost"
-#   #   },
-#   # ]
-#     depends_on = [
-#     module.vpc,
-#     module.subnets
-#   ]
-# }
+  backup_configuration = {
+    enabled                        = true
+    start_time                     = "23:00"
+    location                       = var.region
+    point_in_time_recovery_enabled = true
+    transaction_log_retention_days = 7
+    retained_backups               = 365
+    retention_unit                 = "COUNT"
+  }
+    depends_on = [
+    module.vpc,
+    module.subnets
+  ]
+}
 
 /******************************************
 	Memorystore Redis
@@ -311,60 +242,60 @@ module "subnets" {
 # }
 
 
-/******************************************
-	Artifact Registry 
- *****************************************/
-module "artifact-registry" {
-  source = "./modules/artifact-registry"
+# /******************************************
+# 	Artifact Registry 
+#  *****************************************/
+# module "artifact-registry" {
+#   source = "./modules/artifact-registry"
 
-  name        = var.artifact_registry_name
-  region      = var.region
-  description = var.artifact_registry_description
-  format      = var.artifact_registry_format #"DOCKER"
-  labels      = var.artifact_registry_labels
+#   name        = var.artifact_registry_name
+#   region      = var.region
+#   description = var.artifact_registry_description
+#   format      = var.artifact_registry_format #"DOCKER"
+#   labels      = var.artifact_registry_labels
 
-  depends_on = [
-    google_project_service.api_artifact
-  ]
+#   depends_on = [
+#     google_project_service.api_artifact
+#   ]
 
-}
+# }
 
-/******************************************
-	Cloud Source Repository
- *****************************************/
+# /******************************************
+# 	Cloud Source Repository
+#  *****************************************/
 
-module "source-repository" {
-  source = "./modules/source-repository"
+# module "source-repository" {
+#   source = "./modules/source-repository"
 
-  name    = var.repository-name
-  project = var.project_id["dev"]
-  depends_on = [
-    google_project_service.api_repo
-  ]
+#   name    = var.repository-name
+#   project = var.project_id["dev"]
+#   depends_on = [
+#     google_project_service.api_repo
+#   ]
 
-}
+# }
 
-/******************************************
-	Cloud Storage
- *****************************************/
+# /******************************************
+# 	Cloud Storage
+#  *****************************************/
 
-module "cloud-storage" {
-  source = "./modules/cloud-storage"
+# module "cloud-storage" {
+#   source = "./modules/cloud-storage"
 
-  name             = var.bucket-name
-  project_id       = lookup(var.project_id, local.env)
-  region           = var.region
-  storage_class    = var.storage_class
-  versioning       = var.versioning
-  labels           = var.storage_labels
-  # retention_period = var.retention_period
-  age              = var.life_cycle_days
-  action           = var.life_cycle_action
+#   name             = var.bucket-name
+#   project_id       = lookup(var.project_id, local.env)
+#   region           = var.region
+#   storage_class    = var.storage_class
+#   versioning       = var.versioning
+#   labels           = var.storage_labels
+#   # retention_period = var.retention_period
+#   age              = var.life_cycle_days
+#   action           = var.life_cycle_action
 
 
 
-  # depends_on = [
-  #   google_project_service.api_repo
-  # ]
+#   # depends_on = [
+#   #   google_project_service.api_repo
+#   # ]
 
-}
+# }

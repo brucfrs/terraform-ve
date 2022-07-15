@@ -31,5 +31,9 @@ resource "google_project_service" "api_repo" {
 
 }
 
+resource "google_project_service" "api_network" {
+  service            = "servicenetworking.googleapis.com"
+  disable_on_destroy = false
 
+}
 

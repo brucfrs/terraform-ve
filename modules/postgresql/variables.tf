@@ -58,12 +58,12 @@ variable "disk_autoresize" {
 variable "disk_autoresize_limit" {
   description = "The maximum size to which storage can be auto increased."
   type        = number
-  default     = 0
+  default     = 500
 }
 
 variable "disk_size" {
   description = "The disk size for the master instance."
-  default     = 50
+  default     = 100
 }
 
 variable "disk_type" {

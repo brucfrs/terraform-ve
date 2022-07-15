@@ -6,9 +6,9 @@ variable "project_id" {
   })
   description = "The ID of the project where this VPC will be created"
   default = {
-    dev = "terraform-dev-354612"
+    dev = "terraform-project-dev-356418"
     hml = "vivae-hml"
-    prd = "terraform-prd-354612"
+    prd = "terraform-prod-354612"
   }
 }
 

@@ -1,6 +1,4 @@
-
 locals {
-  # master_instance_name = var.random_instance_name ? "${var.name}-${random_id.suffix[0].hex}" : var.name
 
   ip_configuration_enabled = length(keys(var.ip_configuration)) > 0 ? true : false
 
@@ -9,22 +7,10 @@ locals {
     disabled = {}
   }
 
-  databases = { for db in var.additional_databases : db.name => db }
-  users     = { for u in var.additional_users : u.name => u }
-  iam_users = [for iu in var.iam_user_emails : {
-    email         = iu,
-    is_account_sa = trimsuffix(iu, "gserviceaccount.com") == iu ? false : true
-  }]
-
   retained_backups = lookup(var.backup_configuration, "retained_backups", null)
   retention_unit   = lookup(var.backup_configuration, "retention_unit", null)
 }
 
-resource "random_id" "suffix" {
-  count = var.random_instance_name ? 1 : 0
-
-  byte_length = 4
-}
 
 resource "google_sql_database_instance" "default" {
   project             = var.project_id
@@ -76,16 +62,16 @@ resource "google_sql_database_instance" "default" {
         }
       }
     }
-    dynamic "insights_config" {
-      for_each = var.insights_config != null ? [var.insights_config] : []
+    # dynamic "insights_config" {
+    #   for_each = var.insights_config != null ? [var.insights_config] : []
 
-      content {
-        query_insights_enabled  = true
-        query_string_length     = lookup(insights_config.value, "query_string_length", 1024)
-        record_application_tags = lookup(insights_config.value, "record_application_tags", false)
-        record_client_address   = lookup(insights_config.value, "record_client_address", false)
-      }
-    }
+    #   content {
+    #     query_insights_enabled  = true
+    #     query_string_length     = lookup(insights_config.value, "query_string_length", 1024)
+    #     record_application_tags = lookup(insights_config.value, "record_application_tags", false)
+    #     record_client_address   = lookup(insights_config.value, "record_client_address", false)
+    #   }
+    # }
 
     disk_autoresize       = var.disk_autoresize
     disk_autoresize_limit = var.disk_autoresize_limit
@@ -113,11 +99,11 @@ resource "google_sql_database_instance" "default" {
     }
   }
 
-  lifecycle {
-    ignore_changes = [
-      settings[0].disk_size
-    ]
-  }
+  # lifecycle {
+  #   ignore_changes = [
+  #     settings[0].disk_size
+  #   ]
+  # }
 
   timeouts {
     create = var.create_timeout
@@ -125,112 +111,13 @@ resource "google_sql_database_instance" "default" {
     delete = var.delete_timeout
   }
 
-  depends_on = [null_resource.module_depends_on]
+
 }
 
-resource "google_sql_database" "default" {
-  count      = var.enable_default_db ? 1 : 0
-  name       = var.db_name
-  project    = var.project_id
-  instance   = google_sql_database_instance.default.name
-  charset    = var.db_charset
-  collation  = var.db_collation
-  depends_on = [null_resource.module_depends_on, google_sql_database_instance.default]
-}
 
-resource "google_sql_database" "additional_databases" {
-  for_each   = local.databases
-  project    = var.project_id
-  name       = each.value.name
-  charset    = lookup(each.value, "charset", null)
-  collation  = lookup(each.value, "collation", null)
-  instance   = google_sql_database_instance.default.name
-  depends_on = [null_resource.module_depends_on, google_sql_database_instance.default]
-}
 
-resource "random_password" "user-password" {
-  keepers = {
-    name = google_sql_database_instance.default.name
-  }
 
-  length     = 32
-  special    = false
-  depends_on = [null_resource.module_depends_on, google_sql_database_instance.default]
-}
 
-resource "random_password" "additional_passwords" {
-  for_each = local.users
-  keepers = {
-    name = google_sql_database_instance.default.name
-  }
 
-  length     = 32
-  special    = false
-  depends_on = [null_resource.module_depends_on, google_sql_database_instance.default]
-}
 
-resource "google_sql_user" "default" {
-  count    = var.enable_default_user ? 1 : 0
-  name     = var.user_name
-  project  = var.project_id
-  instance = google_sql_database_instance.default.name
-  password = var.user_password == "" ? random_password.user-password.result : var.user_password
-  depends_on = [
-    null_resource.module_depends_on,
-    google_sql_database_instance.default,
-    google_sql_database_instance.replicas,
-  ]
-}
 
-resource "google_sql_user" "additional_users" {
-  for_each = local.users
-  project  = var.project_id
-  name     = each.value.name
-  password = coalesce(each.value["password"], random_password.additional_passwords[each.value.name].result)
-  instance = google_sql_database_instance.default.name
-  depends_on = [
-    null_resource.module_depends_on,
-    google_sql_database_instance.default,
-    google_sql_database_instance.replicas,
-  ]
-}
-
-resource "google_project_iam_member" "iam_binding" {
-  for_each = {
-    for iu in local.iam_users :
-    "${iu.email} ${iu.is_account_sa}" => iu
-  }
-  project = var.project_id
-  role    = "roles/cloudsql.instanceUser"
-  member = each.value.is_account_sa ? (
-    "serviceAccount:${each.value.email}"
-    ) : (
-    "user:${each.value.email}"
-  )
-}
-
-resource "google_sql_user" "iam_account" {
-  for_each = {
-    for iu in local.iam_users :
-    "${iu.email} ${iu.is_account_sa}" => iu
-  }
-  project = var.project_id
-  name = each.value.is_account_sa ? (
-    trimsuffix(each.value.email, ".gserviceaccount.com")
-    ) : (
-    each.value.email
-  )
-  instance = google_sql_database_instance.default.name
-  type     = each.value.is_account_sa ? "CLOUD_IAM_SERVICE_ACCOUNT" : "CLOUD_IAM_USER"
-
-  depends_on = [
-    null_resource.module_depends_on,
-    google_project_iam_member.iam_binding,
-  ]
-}
-
-resource "null_resource" "module_depends_on" {
-  triggers = {
-    value = length(var.module_depends_on)
-  }
-}
