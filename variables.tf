@@ -258,7 +258,7 @@ variable "subnet_ip_postgre" {
   })
   description = "The ip range to allow connecting from/to Cloud SQL"
   default = {
-    dev = "10.10.0.0/"
+    dev = "10.10.0.0/24"
     hml = "10.11.0.0/24"
     prd = "10.12.0.0/24"
   }

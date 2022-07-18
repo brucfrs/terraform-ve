@@ -12,6 +12,7 @@ resource "google_container_cluster" "primary" {
   location       = local.location
   node_locations = local.node_locations
   network = "projects/${local.network_project_id}/global/networks/${var.network_name}"
+  
   dynamic "network_policy" {
     for_each = local.cluster_network_policy
 
@@ -35,6 +36,7 @@ resource "google_container_cluster" "primary" {
 
   logging_service    = var.logging_service
   monitoring_service = var.monitoring_service
+
   cluster_autoscaling {
     enabled = var.cluster_autoscaling.enabled
     dynamic "auto_provisioning_defaults" {
@@ -129,6 +131,7 @@ resource "google_container_cluster" "primary" {
     update = lookup(var.timeouts, "update", "45m")
     delete = lookup(var.timeouts, "delete", "45m")
   }
+
   node_pool {
     name               = "default-pool"
     initial_node_count = var.initial_node_count

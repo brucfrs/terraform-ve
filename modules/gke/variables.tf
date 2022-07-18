@@ -92,7 +92,7 @@ variable "datapath_provider" {
 variable "maintenance_start_time" {
   type        = string
   description = "Time window specified for daily or recurring maintenance operations in RFC3339 format"
-  default     = "05:00"
+  default     = "03:00"
 }
 
 variable "maintenance_exclusions" {
@@ -261,6 +261,7 @@ variable "monitoring_service" {
 variable "create_service_account" {
   type        = bool
   description = "Defines if service account specified to run nodes should be created."
+  default = true
 }
 
 variable "grant_registry_access" {

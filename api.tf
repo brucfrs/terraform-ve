@@ -37,3 +37,8 @@ resource "google_project_service" "api_network" {
 
 }
 
+resource "google_project_service" "api_sql" {
+  service            = "sqladmin.googleapis.com"
+  disable_on_destroy = false
+
+}

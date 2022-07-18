@@ -13,7 +13,6 @@ data "google_container_engine_versions" "zone" {
 }
 
 data "google_compute_zones" "available" {
-  provider = google
 
   project = var.project_id
   region  = local.region
@@ -84,7 +83,7 @@ locals {
 
   cluster_endpoint_for_nodes = "${google_container_cluster.primary.endpoint}/32"
 
-  cluster_network_tag = "gke-${var.name}"
+  cluster_network_tag = "${var.name}"
   workload_identity_enabled = !(var.identity_namespace == null || var.identity_namespace == "null")
   cluster_workload_identity_config = !local.workload_identity_enabled ? [] : var.identity_namespace == "enabled" ? [{
     workload_pool = "${var.project_id}.svc.id.goog" }] : [{ workload_pool = var.identity_namespace

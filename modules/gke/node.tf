@@ -47,12 +47,12 @@ resource "google_container_node_pool" "pools" {
     image_type       = lookup(each.value, "image_type", "COS_CONTAINERD")
     machine_type     = lookup(each.value, "machine_type", "e2-micro")
     min_cpu_platform = lookup(each.value, "min_cpu_platform", "")
-    dynamic "gcfs_config" {
-      for_each = lookup(each.value, "enable_gcfs", false) ? [true] : []
-      content {
-        enabled = gcfs_config.value
-      }
-    }
+    # dynamic "gcfs_config" {
+    #   for_each = lookup(each.value, "enable_gcfs", false) ? [true] : []
+    #   content {
+    #     enabled = gcfs_config.value
+    #   }
+    # }
     labels = merge(
       lookup(lookup(local.node_pools_labels, "default_values", {}), "cluster_name", true) ? { "cluster_name" = var.name } : {},
       lookup(lookup(local.node_pools_labels, "default_values", {}), "node_pool", true) ? { "node_pool" = each.value["name"] } : {},
@@ -79,6 +79,7 @@ resource "google_container_node_pool" "pools" {
         value  = taint.value.value
       }
     }
+
     tags = concat(
       lookup(local.node_pools_tags, "default_values", [true, true])[0] ? [local.cluster_network_tag] : [],
       lookup(local.node_pools_tags, "default_values", [true, true])[1] ? ["${local.cluster_network_tag}-${each.value["name"]}"] : [],
