@@ -47,3 +47,4 @@ test/fixtures/shared/terraform.tfvars
 
 credentials.json
 terraform*.json
+terraform.*

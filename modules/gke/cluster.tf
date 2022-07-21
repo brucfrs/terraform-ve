@@ -132,6 +132,12 @@ resource "google_container_cluster" "primary" {
     delete = lookup(var.timeouts, "delete", "45m")
   }
 
+  private_cluster_config {
+      enable_private_endpoint = var.enable_private_endpoint
+      enable_private_nodes    = var.enable_private_nodes
+      master_ipv4_cidr_block  = var.master_ipv4_cidr_block
+  }
+
   node_pool {
     name               = "default-pool"
     initial_node_count = var.initial_node_count

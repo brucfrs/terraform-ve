@@ -368,6 +368,7 @@ variable "initial_node_count" {
 variable "remove_default_node_pool" {
   type        = bool
   description = "Remove default node pool while setting up the cluster"
+  default = false
 }
 
 variable "filestore_csi_driver" {
@@ -428,4 +429,25 @@ variable "timeouts" {
     condition     = !contains([for t in keys(var.timeouts) : contains(["create", "update", "delete"], t)], false)
     error_message = "Only create, update, delete timeouts can be specified."
   }
+}
+
+variable "enable_private_endpoint" {
+  type = bool
+  description = ""
+  default = false
+  
+}
+
+variable "enable_private_nodes" {
+  type = bool
+  description = ""
+  default = true
+  
+}
+
+variable "master_ipv4_cidr_block" {
+  type = string
+  description = ""
+  default = "10.0.5.0/28"
+  
 }

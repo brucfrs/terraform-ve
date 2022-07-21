@@ -232,6 +232,31 @@ variable "cluster_resource_labels" {
   }
 }
 
+variable "create_service_account" {
+  type = bool
+  description = ""
+  default = false
+}
+
+variable "enable_vertical_pod_autoscaling" {
+  type = bool
+  description = ""
+  default = false
+}
+
+variable "http_load_balancing" {
+  type = bool
+  description = ""
+  default = false
+}
+
+variable "horizontal_pod_autoscaling" {
+  type = bool
+  description = ""
+  default = false
+}
+
+
 /******************************************
 	PostgreSQL variables
  *****************************************/
