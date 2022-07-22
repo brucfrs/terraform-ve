@@ -121,3 +121,7 @@
 output "service_range" {
   value = module.vpc.vpc_database_service_range
 }
+
+output "vpc" {
+  value = module.vpc.network_name
+}

@@ -26,3 +26,8 @@
 output "vpc_database_service_range" {
   value = google_compute_global_address.private_ip_address_postegre.name
 }
+
+output "network_name" {
+  value       = google_compute_network.network.name
+  description = "The name of the VPC being created"
+ }

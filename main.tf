@@ -99,17 +99,17 @@ module "gke" {
   source     = "./modules/gke"
   project_id = lookup(var.project_id, local.env)
   #network_project_id          = lookup(var.project_id, local.env)
-  name                            = "cluster-gke-${local.env}"
-  regional                        = lookup(var.gke_location, local.env)
-  region                          = var.region
-  network_name                    = lookup(var.network_name, local.env)
-  subnet_name                     = lookup(var.subnet_name, local.env)
-  ip_range_pods                   = lookup(var.secundary_range_name_k8s, local.env)
-  ip_range_services               = lookup(var.secundary_range_name_services, local.env)
-  create_service_account          = var.create_service_account
-  service_account                 = var.compute_engine_service_account
-  secundary_ip_cidr_range_k8s     = lookup(var.secundary_ip_cidr_range_k8s, local.env)
-  default_max_pods_per_node       = var.default_max_pods_per_node
+  name                        = "cluster-gke-${local.env}"
+  regional                    = lookup(var.gke_location, local.env)
+  region                      = var.region
+  network_name                = lookup(var.network_name, local.env)
+  subnet_name                 = lookup(var.subnet_name, local.env)
+  ip_range_pods               = lookup(var.secundary_range_name_k8s, local.env)
+  ip_range_services           = lookup(var.secundary_range_name_services, local.env)
+  create_service_account      = var.create_service_account
+  service_account             = var.compute_engine_service_account
+  secundary_ip_cidr_range_k8s = lookup(var.secundary_ip_cidr_range_k8s, local.env)
+  default_max_pods_per_node   = var.default_max_pods_per_node
   #remove_default_node_pool        = true
   enable_vertical_pod_autoscaling = var.enable_vertical_pod_autoscaling
   http_load_balancing             = var.http_load_balancing
@@ -188,7 +188,7 @@ module "gke" {
 # #   user_labels = {
 # #     managed = "terraform",
 # #      env = local.env
-    
+
 # #   }
 
 # #   ip_configuration = {
@@ -248,20 +248,20 @@ module "gke" {
 /******************************************
 	Artifact Registry 
  *****************************************/
-module "artifact-registry" {
-  source = "./modules/artifact-registry"
+# module "artifact-registry" {
+#   source = "./modules/artifact-registry"
 
-  name        = var.artifact_registry_name
-  region      = var.region
-  description = var.artifact_registry_description
-  format      = var.artifact_registry_format #"DOCKER"
-  labels      = var.artifact_registry_labels
+#   name        = var.artifact_registry_name
+#   region      = var.region
+#   description = var.artifact_registry_description
+#   format      = var.artifact_registry_format #"DOCKER"
+#   labels      = var.artifact_registry_labels
 
-  depends_on = [
-    google_project_service.api_artifact
-  ]
+#   depends_on = [
+#     google_project_service.api_artifact
+#   ]
 
-}
+# }
 
 
 # # # /******************************************
@@ -288,3 +288,20 @@ module "artifact-registry" {
 # # #   # ]
 
 # # # }
+
+# # # /******************************************
+# # # 	Cloud Storage
+# # #  *****************************************/
+
+module "nat" {
+  source      = "./modules/nat"
+  router_name = var.router_name
+  region      = var.region
+  vpc         = module.vpc.network_name
+  nat_name    = var.nat_name
+
+  depends_on = [
+    module.vpc,
+    module.subnets
+  ]
+}

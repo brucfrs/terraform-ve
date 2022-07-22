@@ -233,27 +233,27 @@ variable "cluster_resource_labels" {
 }
 
 variable "create_service_account" {
-  type = bool
+  type        = bool
   description = ""
-  default = false
+  default     = false
 }
 
 variable "enable_vertical_pod_autoscaling" {
-  type = bool
+  type        = bool
   description = ""
-  default = false
+  default     = false
 }
 
 variable "http_load_balancing" {
-  type = bool
+  type        = bool
   description = ""
-  default = false
+  default     = false
 }
 
 variable "horizontal_pod_autoscaling" {
-  type = bool
+  type        = bool
   description = ""
-  default = false
+  default     = false
 }
 
 
@@ -531,4 +531,20 @@ variable "life_cycle_action" {
   description = ""
   default     = "Delete"
 
+}
+
+/******************************************
+ Nat variables
+ *****************************************/
+
+variable "router_name" {
+  type        = string
+  description = ""
+  default     = "router-name"
+}
+
+variable "nat_name" {
+  type        = string
+  description = ""
+  default     = "nat-name"
 }
