@@ -27,7 +27,7 @@ variable "region" {
 variable "zones" {
   type        = list(string)
   description = "The zones to host the cluster in (optional if regional cluster / required if zonal)"
-  default     = ["us-east1-b", "us-east1-c", "us-east1-d"]
+  default     = ["southamerica-east1-a", "southamerica-east1-b", "southamerica-east1-c"]
 }
 
 variable "network_name" {
@@ -258,11 +258,11 @@ variable "monitoring_service" {
   default     = "monitoring.googleapis.com/kubernetes"
 }
 
-variable "create_service_account" {
-  type        = bool
-  description = "Defines if service account specified to run nodes should be created."
-  default = true
-}
+# variable "create_service_account" {
+#   type        = bool
+#   description = "Defines if service account specified to run nodes should be created."
+#   default = true
+# }
 
 variable "grant_registry_access" {
   type        = bool
@@ -276,10 +276,10 @@ variable "registry_project_ids" {
   default     = []
 }
 
-variable "service_account" {
-  type        = string
-  description = "The service account to run nodes as if not overridden in `node_pools`. The create_service_account variable default value (true) will cause a cluster-specific service account to be created."
-}
+# variable "service_account" {
+#   type        = string
+#   description = "The service account to run nodes as if not overridden in `node_pools`. The create_service_account variable default value (true) will cause a cluster-specific service account to be created."
+# }
 
 variable "issue_client_certificate" {
   type        = bool
@@ -451,3 +451,38 @@ variable "master_ipv4_cidr_block" {
   default = "10.0.5.0/28"
   
 }
+
+variable "service_account_name" {
+  type = string
+  description = ""
+  default = "gke-service-account"
+  
+}
+
+variable "service_account_display_name" {
+  type = string
+  description = ""
+  default = "GKE Service Account"
+  
+}
+
+variable "role-editor" {
+  type = string
+  description = ""
+  default = "roles/editor"
+  
+}
+
+variable "role-service-controller" {
+  type = string
+  description = ""
+  default =  "roles/servicemanagement.serviceController"
+  
+}
+variable "role-trace" {
+  type = string
+  description = ""
+  default = "roles/cloudtrace.agent"
+  
+}
+

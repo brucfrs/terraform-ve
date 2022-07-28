@@ -43,7 +43,7 @@ resource "google_container_cluster" "primary" {
       for_each = var.cluster_autoscaling.enabled ? [1] : []
 
       content {
-        service_account = local.service_account
+        service_account = google_service_account.service_account.email
         oauth_scopes    = local.node_pools_oauth_scopes["all"]
       }
     }
@@ -132,11 +132,11 @@ resource "google_container_cluster" "primary" {
     delete = lookup(var.timeouts, "delete", "45m")
   }
 
-  private_cluster_config {
-      enable_private_endpoint = var.enable_private_endpoint
-      enable_private_nodes    = var.enable_private_nodes
-      master_ipv4_cidr_block  = var.master_ipv4_cidr_block
-  }
+  # private_cluster_config {
+  #     enable_private_endpoint = var.enable_private_endpoint
+  #     enable_private_nodes    = var.enable_private_nodes
+  #     master_ipv4_cidr_block  = var.master_ipv4_cidr_block
+  # }
 
   node_pool {
     name               = "default-pool"
@@ -153,8 +153,7 @@ resource "google_container_cluster" "primary" {
         }
       }
 
-      service_account = lookup(var.node_pools[0], "service_account", local.service_account)
-
+      service_account =  google_service_account.service_account.email
       tags = concat(
         lookup(local.node_pools_tags, "default_values", [true, true])[0] ? [local.cluster_network_tag] : [],
         lookup(local.node_pools_tags, "default_values", [true, true])[1] ? ["${local.cluster_network_tag}-default-pool"] : [],

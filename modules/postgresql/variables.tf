@@ -81,16 +81,19 @@ variable "pricing_plan" {
 variable "maintenance_window_day" {
   description = "The day of week (1-7) for the master instance maintenance."
   type        = number
+  default = 7
 }
 
 variable "maintenance_window_hour" {
   description = "The hour of day (0-23) maintenance window for the master instance maintenance."
   type        = number
+  default = 3
 }
 
 variable "maintenance_window_update_track" {
   description = "The update track of maintenance window for the master instance maintenance.Can be either `canary` or `stable`."
   type        = string
+  default = "stable"
 }
 
 variable "database_flags" {
@@ -99,7 +102,7 @@ variable "database_flags" {
     name  = string
     value = string
   }))
-  default = []
+  default = [{ name = "autovacuum", value = "off" }]
 }
 
 variable "user_labels" {
@@ -120,6 +123,15 @@ variable "backup_configuration" {
     retained_backups               = number
     retention_unit                 = string
   })
+  default =  {
+    enabled                        = true
+    start_time                     = "03:00"
+    location                       = "southamerica-east1"
+    point_in_time_recovery_enabled = true
+    transaction_log_retention_days = 7
+    retained_backups               = 365
+    retention_unit                 = "COUNT"
+  }
 }
 
 variable "insights_config" {
@@ -141,9 +153,7 @@ variable "ip_configuration" {
     require_ssl         = bool
     allocated_ip_range  = string
   })
-  # default = {
-  #   authorized_networks = []
-  # }
+
 }
 
 // Read Replicas
@@ -268,6 +278,7 @@ variable "module_depends_on" {
 variable "deletion_protection" {
   description = "Used to block Terraform from deleting a SQL Instance."
   type        = bool
+  default = false
 }
 
 variable "read_replica_deletion_protection" {

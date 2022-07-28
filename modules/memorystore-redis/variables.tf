@@ -16,6 +16,7 @@ variable "name" {
 variable "tier" {
   description = "The service tier of the instance. https://cloud.google.com/memorystore/docs/redis/reference/rest/v1/projects.locations.instances#Tier"
   type        = string
+  default = "STANDARD_HA"
 }
 
 variable "authorized_network" {
@@ -55,6 +56,7 @@ variable "alternative_location_id" {
 variable "redis_version" {
   description = "The version of Redis software."
   type        = string
+  default = "REDIS_6_X"
 }
 
 variable "redis_configs" {
@@ -96,5 +98,5 @@ variable "auth_enabled" {
 variable "transit_encryption_mode" {
   description = "The TLS mode of the Redis instance, If not provided, TLS is enabled for the instance."
   type        = string
-  default     = "SERVER_AUTHENTICATION"
+  default     = "DISABLED" #"SERVER_AUTHENTICATION"
 }

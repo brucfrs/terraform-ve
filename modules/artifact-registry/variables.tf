@@ -16,6 +16,7 @@ variable "description" {
 variable "format" {
   type = string
   description = ""
+  default = "DOCKER"
 }
 variable "labels" {
   type = map(string)

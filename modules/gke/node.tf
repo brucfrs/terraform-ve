@@ -92,11 +92,8 @@ resource "google_container_node_pool" "pools" {
     disk_type       = lookup(each.value, "disk_type", "pd-balanced")
 
 
-    service_account = lookup(
-      each.value,
-      "service_account",
-      local.service_account,
-    )
+    service_account = google_service_account.service_account.email 
+
     preemptible = lookup(each.value, "preemptible", false)
 
     oauth_scopes = concat(
@@ -129,4 +126,8 @@ resource "google_container_node_pool" "pools" {
     update = lookup(var.timeouts, "update", "45m")
     delete = lookup(var.timeouts, "delete", "45m")
   }
+
+  depends_on = [
+    google_service_account.service_account
+  ]
 }

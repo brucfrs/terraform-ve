@@ -6,7 +6,7 @@ variable "project_id" {
   })
   description = "The ID of the project where this VPC will be created"
   default = {
-    dev = "terraform-project-dev-356418"
+    dev = "terraform-development-357411"
     hml = "vivae-hml"
     prd = "terraform-prod-354612"
   }
@@ -180,12 +180,29 @@ variable "secundary_ip_cidr_range_services" {
 variable "subnet_region" {
   type        = string
   description = "The list of subnets being created"
-  default     = "us-east1"
+  default     = "southamerica-east1"
 }
 
 /******************************************
 	GKE variables
  *****************************************/
+variable "cluster_name" {
+  type = object({
+    dev = string
+    hml = string
+    prd = string
+  })
+  description = "The name of the network being created"
+  default = {
+    dev = "cluster-gke-dev"
+    hml = "cluster-gke-hml"
+    prd = "cluster-gke-prd"
+  }
+}
+
+
+
+
 variable "gke_location" {
   type = object({
     dev = bool
@@ -203,7 +220,7 @@ variable "gke_location" {
 variable "region" {
   type        = string
   description = "The region to host the cluster in"
-  default     = "us-east1"
+  default     = "southamerica-east1"
 }
 
 variable "ip_range_services" {
@@ -218,24 +235,12 @@ variable "default_max_pods_per_node" {
   default     = 110
 }
 
-variable "compute_engine_service_account" {
-  type        = string
-  description = "Service account to associate to the nodes in the cluster"
-  default     = ""
-}
-
 variable "cluster_resource_labels" {
   type        = map(string)
   description = "The GCE resource labels (a map of key/value pairs) to be applied to the cluster"
   default = {
     managed = "terraform"
   }
-}
-
-variable "create_service_account" {
-  type        = bool
-  description = ""
-  default     = false
 }
 
 variable "enable_vertical_pod_autoscaling" {
@@ -256,10 +261,130 @@ variable "horizontal_pod_autoscaling" {
   default     = false
 }
 
+variable "node_pools" {
+  type = object({
+    dev = list(map(string))
+    hml = list(map(string))
+    prd = list(map(string))
+  })
+  description = "The subnet name that postreg instance will be created"
+  default = {
+    dev = [{
+      name              = "pool-dev",
+      min_count         = 1,
+      max_count         = 10,
+      local_ssd_count   = 0,
+      disk_size_gb      = 50,
+      disk_type         = "pd-balanced",
+      auto_repair       = true,
+      auto_upgrade      = true,
+      autoscaling       = true,
+      node_count        = 2,
+      machine_type      = "e2-standard-4",
+      preemptible       = false,
+      max_pods_per_node = 24
+    }]
+    hml = [{
+      name              = "pool-hml",
+      min_count         = 1,
+      max_count         = 10,
+      local_ssd_count   = 0,
+      disk_size_gb      = 50,
+      disk_type         = "pd-balanced",
+      auto_repair       = true,
+      auto_upgrade      = true,
+      autoscaling       = true,
+      node_count        = 2,
+      machine_type      = "e2-standard-4",
+      preemptible       = false,
+      max_pods_per_node = 24
+    }]
+    prd = [{
+      name              = "pool-prod",
+      min_count         = 1,
+      max_count         = 10,
+      local_ssd_count   = 0,
+      disk_size_gb      = 50,
+      disk_type         = "pd-balanced",
+      auto_repair       = true,
+      auto_upgrade      = true,
+      autoscaling       = true,
+      node_count        = 4,
+      machine_type      = "e2-standard-4",
+      preemptible       = false,
+      max_pods_per_node = 24
+      }, {
+      name              = "pool-prod-2",
+      min_count         = 1,
+      max_count         = 10,
+      local_ssd_count   = 0,
+      disk_size_gb      = 50,
+      disk_type         = "pb-balanced",
+      auto_repair       = true,
+      auto_upgrade      = true,
+      autoscaling       = true,
+      node_count        = 4,
+      machine_type      = "e2-standard-4",
+      preemptible       = false,
+      max_pods_per_node = 24
+      }
+    ]
+  }
+}
+
 
 /******************************************
 	PostgreSQL variables
  *****************************************/
+
+variable "postgre_instance_name" {
+  type = object({
+    dev = string
+    hml = string
+    prd = string
+  })
+  description = "The ip range to allow connecting from/to Cloud SQL"
+  default = {
+    dev = "postgre-dev-2"
+    hml = "postgre-hml"
+    prd = "postgre-prd"
+  }
+}
+
+variable "database_version" {
+  type = string
+  description = ""
+  default = "POSTGRES_9_6"
+}
+
+variable "postgre_machine_type" {
+  type = string
+  description = ""
+  default = "db-custom-4-15360"
+
+}
+
+variable "postgre_zone" {
+  type = string
+  description = ""
+  default = "southamerica-east1-b"
+}
+
+variable "postgre_availability_type" {
+  type = object({
+    dev = string
+    hml = string
+    prd = string
+  })
+  description = "The subnet name that postreg instance will be created"
+  default = {
+    dev = "ZONAL"
+    hml = "ZONAL"
+    prd = "REGIONAL"
+  }
+}
+
+
 
 variable "subnet_name_postgre" {
   type = object({
@@ -275,6 +400,7 @@ variable "subnet_name_postgre" {
   }
 }
 
+##
 variable "subnet_ip_postgre" {
   type = object({
     dev = string
@@ -289,19 +415,19 @@ variable "subnet_ip_postgre" {
   }
 }
 
-variable "database_name" {
-  type = object({
-    dev = string
-    hml = string
-    prd = string
-  })
-  description = "The name of the network being created"
-  default = {
-    dev = "database-dev-postgre"
-    hml = "database-hml-postgre"
-    prd = "database-prd-postgre"
-  }
-}
+# variable "database_name" {
+#   type = object({
+#     dev = string
+#     hml = string
+#     prd = string
+#   })
+#   description = "The name of the network being created"
+#   default = {
+#     dev = "database-dev-postgre"
+#     hml = "database-hml-postgre"
+#     prd = "database-prd-postgre"
+#   }
+# }
 
 
 variable "disk_autoresize" {
@@ -330,11 +456,11 @@ variable "disk_type" {
 	Redis variables
  *****************************************/
 
-variable "memorystore_zones" {
-  type        = list(string)
-  description = "Zones where memcache nodes should be provisioned. If not provided, all zones will be used."
-  default     = null
-}
+# variable "memorystore_zones" {
+#   type        = list(string)
+#   description = "Zones where memcache nodes should be provisioned. If not provided, all zones will be used."
+#   default     = null
+# }
 
 variable "memorystore_name" {
   type = object({
@@ -350,35 +476,18 @@ variable "memorystore_name" {
   }
 }
 
-variable "tier" {
-  type        = string
-  description = "value"
-  default     = "STANDARD_HA"
-}
 
 variable "memorystore_location_id" {
   type        = string
   description = "The ID of the instance or a fully qualified identifier for the instance."
-  default     = "us-east1-b"
+  default     = "southamerica-east1-b"
 
 }
 
 variable "memorystore_alternative_location_id" {
   type        = string
   description = "The ID of the instance or a fully qualified identifier for the instance."
-  default     = "us-east1-c"
-}
-
-variable "auth_enabled" {
-  type        = string
-  description = ""
-  default     = false
-}
-
-variable "transit_encryption_mode" {
-  type        = string
-  description = ""
-  default     = "DISABLED"
+  default     = "southamerica-east1-c"
 }
 
 variable "redis_memory_size_gb" {
@@ -410,11 +519,6 @@ variable "redis_replica_number" {
   }
 }
 
-variable "redis_version" {
-  type        = string
-  description = ""
-  default     = "REDIS_6_X"
-}
 
 variable "display_name" {
   type = object({
@@ -452,12 +556,6 @@ variable "artifact_registry_description" {
   type        = string
   description = ""
   default     = "vivae"
-}
-
-variable "artifact_registry_format" {
-  type        = string
-  description = ""
-  default     = "DOCKER"
 }
 
 variable "artifact_registry_labels" {
