@@ -6,9 +6,9 @@ variable "project_id" {
   })
   description = "The ID of the project where this VPC will be created"
   default = {
-    dev = "terraform-development-357411"
+    dev = "vivae-poc"
     hml = "vivae-hml"
-    prd = "terraform-prod-354612"
+    prd = "vivae-poc"
   }
 }
 
@@ -22,7 +22,7 @@ variable "gcp_credentials" {
   default = {
     dev = "terraform-dev.json"
     hml = "terraform-hml.json"
-    prd = "terraform-prd.json"
+    prd = "terraform-dev.json"
   }
 }
 
@@ -320,7 +320,7 @@ variable "node_pools" {
       max_count         = 10,
       local_ssd_count   = 0,
       disk_size_gb      = 50,
-      disk_type         = "pb-balanced",
+      disk_type         = "pd-balanced",
       auto_repair       = true,
       auto_upgrade      = true,
       autoscaling       = true,

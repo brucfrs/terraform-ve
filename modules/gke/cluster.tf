@@ -197,4 +197,8 @@ resource "google_container_cluster" "primary" {
       workload_pool = workload_identity_config.value.workload_pool
     }
   }
+
+  depends_on = [
+    google_service_account.service_account
+  ]
 }
