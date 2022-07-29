@@ -19,7 +19,7 @@ output "network_self_link" {
 }
 
 output "vpc_database_service_range" {
-  value = google_compute_global_address.private_ip_address_postegre.name
+  value =  "${google_compute_global_address.private_ip_address_postegre.address}/29" #google_compute_global_address.private_ip_address_postegre.name
 }
 
 output "network_name" {

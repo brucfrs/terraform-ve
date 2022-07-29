@@ -14,17 +14,17 @@ resource "google_compute_network" "network" {
 
 resource "google_compute_global_address" "private_ip_address_postegre" {
   name          = var.private_ip_range_name_postegre
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  prefix_length = 24
+  purpose       = var.private_ip_range_purpose
+  address_type  = var.private_ip_range_address_type
+  prefix_length = var.private_ip_range_prefix_length
   network       = google_compute_network.network.self_link
-  address       = "10.8.0.0"
+  address       =  var.private_ip_range_address
 
 }
 
 # Establish VPC network peering connection using the reserved address range
 resource "google_service_networking_connection" "private_vpc_connection" {
   network                 = google_compute_network.network.self_link
-  service                 = "servicenetworking.googleapis.com"
+  service                 = var.private_vpc_connection_service
   reserved_peering_ranges = [google_compute_global_address.private_ip_address_postegre.name]
 }

@@ -290,7 +290,10 @@ variable "issue_client_certificate" {
 variable "cluster_resource_labels" {
   type        = map(string)
   description = "The GCE resource labels (a map of key/value pairs) to be applied to the cluster"
-  default     = {}
+  default     = {
+    managed = "terraform",
+    enviroment = "dev"
+  }
 }
 
 variable "identity_namespace" {
@@ -486,3 +489,7 @@ variable "role-trace" {
   
 }
 
+variable "subnet_self_link" {
+  type        = string
+  description = "The ID of a BigQuery Dataset for using BigQuery as the destination of resource usage export."
+}

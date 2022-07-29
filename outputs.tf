@@ -125,3 +125,7 @@ output "service_range" {
 output "vpc" {
   value = module.vpc.network_name
 }
+
+output "subnet_self_link" {
+  value = module.subnets.subnet_self_link
+}

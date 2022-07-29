@@ -30,7 +30,7 @@ resource "google_container_cluster" "primary" {
     }
   }
 
-  subnetwork = "projects/${local.network_project_id}/regions/${local.region}/subnet_name/${var.subnet_name}"
+  subnetwork = var.subnet_self_link
 
   min_master_version = var.release_channel != null ? null : local.master_version
 

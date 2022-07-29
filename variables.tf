@@ -239,7 +239,8 @@ variable "cluster_resource_labels" {
   type        = map(string)
   description = "The GCE resource labels (a map of key/value pairs) to be applied to the cluster"
   default = {
-    managed = "terraform"
+    managed = "terraform",
+    enviroment = "dev"
   }
 }
 
@@ -280,7 +281,7 @@ variable "node_pools" {
       auto_upgrade      = true,
       autoscaling       = true,
       node_count        = 2,
-      machine_type      = "e2-standard-4",
+      machine_type      = "e2-medium",
       preemptible       = false,
       max_pods_per_node = 24
     }]
@@ -345,29 +346,29 @@ variable "postgre_instance_name" {
   })
   description = "The ip range to allow connecting from/to Cloud SQL"
   default = {
-    dev = "postgre-dev-2"
+    dev = "postgre-dev-3"
     hml = "postgre-hml"
     prd = "postgre-prd"
   }
 }
 
 variable "database_version" {
-  type = string
+  type        = string
   description = ""
-  default = "POSTGRES_9_6"
+  default     = "POSTGRES_9_6"
 }
 
 variable "postgre_machine_type" {
-  type = string
+  type        = string
   description = ""
-  default = "db-custom-4-15360"
+  default     = "db-custom-4-15360"
 
 }
 
 variable "postgre_zone" {
-  type = string
+  type        = string
   description = ""
-  default = "southamerica-east1-b"
+  default     = "southamerica-east1-b"
 }
 
 variable "postgre_availability_type" {
@@ -538,7 +539,8 @@ variable "memorystore_labels" {
   type        = map(string)
   description = ""
   default = {
-    "managed" = "terraform"
+    "managed" = "terraform",
+    "enviroment" = "dev"
   }
 }
 

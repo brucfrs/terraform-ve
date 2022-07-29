@@ -35,7 +35,39 @@ variable "mtu" {
   type        = number
   description = "The network MTU (If set to 0, meaning MTU is unset - defaults to '1460'). Recommended values: 1460 (default for historic reasons), 1500 (Internet default), or 8896 (for Jumbo packets). Allowed are all values in the range 1300 to 8896, inclusively."
 }
+
 variable "private_ip_range_name_postegre" {
   type = string
   description = "The name of the private ip range of the private service network range for postegre."
+}
+
+
+variable "private_ip_range_purpose" {
+  type = string
+  description = "The name of the private ip range of the private service network range for postegre."
+  default = "VPC_PEERING"
+}
+
+variable "private_ip_range_address_type" {
+  type = string
+  description = "The name of the private ip range of the private service network range for postegre."
+  default = "INTERNAL"
+}
+
+variable "private_ip_range_prefix_length" {
+  type = number
+  description = "The name of the private ip range of the private service network range for postegre."
+  default = 20
+}
+
+variable "private_ip_range_address" {
+  type = string
+  description = "The name of the private ip range of the private service network range for postegre."
+  default = "10.200.0.0"
+}
+
+variable "private_vpc_connection_service" {
+  type = string
+  description = "The name of the private ip range of the private service network range for postegre."
+  default = "servicenetworking.googleapis.com"
 }

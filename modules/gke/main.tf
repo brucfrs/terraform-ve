@@ -67,11 +67,11 @@ locals {
   cluster_alias_ranges_cidr = var.add_cluster_firewall_rules ? { for range in toset(data.google_compute_subnetwork.gke_subnetwork[0].secondary_ip_range) : range.range_name => range.ip_cidr_range } : {}
 
   cluster_network_policy = var.network_policy ? [{
-    enabled  = true
-    provider = var.network_policy_provider
+    enabled  = false #true
+    provider = null #var.network_policy_provider
     }] : [{
-    enabled  = false
-    provider = null
+    enabled  = false 
+    provider = null 
   }]
 
 
