@@ -49,3 +49,4 @@ credentials.json
 terraform*.json
 terraform.*
 terraform.tfstate.d/
+terraform.tfstate.d
