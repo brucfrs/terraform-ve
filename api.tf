@@ -42,3 +42,23 @@ resource "google_project_service" "api_sql" {
   disable_on_destroy = false
 
 }
+
+resource "google_project_service" "api_service_control" {
+  service            = "servicecontrol.googleapis.com"
+  disable_on_destroy = false
+
+}
+
+resource "google_project_service" "api_service_management" {
+  service            = "servicecontrol.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "api_endpoints" {
+  service            = "endpoints.googleapis.com"
+  disable_on_destroy = false
+}
+
+# resource "google_project_service" "created_api" {
+#   service = module.endpoints.created_api_host
+# }

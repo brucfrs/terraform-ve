@@ -648,3 +648,20 @@ variable "nat_name" {
   description = ""
   default     = "nat-name"
 }
+
+/******************************************
+ Endpoints variables
+ *****************************************/
+
+
+variable "endpoints_service_name" {
+  type = string
+  description = ""
+  default = "echo-api.endpoints.vivae-poc.cloud.goog"
+}
+
+variable "api_file_path" {
+  type = string
+  description = ""
+  default = "./endpoints_files/openapi.yaml"
+}

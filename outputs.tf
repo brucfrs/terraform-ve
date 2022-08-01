@@ -129,3 +129,7 @@ output "vpc" {
 output "subnet_self_link" {
   value = module.subnets.subnet_self_link
 }
+
+output "created_api_hos" {
+  value = module.endpoints.created_api_host
+}
